@@ -12,8 +12,9 @@ LookingGlass is a parsing tool to assist you with your traffic research. It is d
 The data is searched within encodings such as `base64`, `urlencoding`, `base58` and we try to eliminate false-positives with searching if data might be data like `unix epoch time`.
 
 It will create two artifacts after execution:
-1. `filename.csv` - A CSV with all requests and parameters found, parsed.
-2. `filename.html` - An HTML report only with the possible hits of patterns described above.
+
+  1. `filename.csv` - A CSV with all requests and parameters found, parsed.
+  2. `filename.html` - An HTML report only with the possible hits of patterns described above.
 
 *Little Comment* - Because we get to record directly on devices sometimes, and on Android the recorder does not add the IP layer, we have added support for that as well.
 
