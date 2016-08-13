@@ -107,12 +107,6 @@ def whoami(string):
 	if a:
 		return "CC"
 
-	if special_match(string):
-		if 10 <= len(string) <= 18:
-			if is_valid_phone(string):
-				if not too_many_repetitions(string):
-					return "MSISDN"
-
 	try:
 		a = re.search(r'^(([\+\-])?\d{1,3}\.\d{2,17})$', string)
 		b = a.group(1)
@@ -133,5 +127,19 @@ def whoami(string):
 		return "Coordinate"
 	except:
 		pass
+
+	try:
+		a = re.search(r'([a-zA-Z0-9\-\.\_]+(\@| at )[a-zA-Z0-9\-\.\_]{3,16}(\.|dot| dot )[a-zA-Z0-9\-\.\_]{2,3})', string)
+		b = a.group(1)
+		return "Email"
+	except:
+		pass
+
+	if special_match(string):
+		if 10 <= len(string) <= 18:
+			if is_valid_phone(string):
+				if string[0] != "-":
+					if not too_many_repetitions(string):
+						return "MSISDN"
 
 	return OKAY

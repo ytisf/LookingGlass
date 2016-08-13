@@ -54,17 +54,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 - [x] Base.
 
 ### Version 1.1 - Bromhilda
-- [ ] **BugFix** - Fix CSS writer, which is an idiotic idea anyway.
-- [ ] **BugFix** - If encountering Longitude for the 2nd time have it change to Latitude.
+- [x] **BugFix** - Fix CSS writer, which is an idiotic idea anyway.
+- [x] **BugFix** - If encountering Longitude for the 2nd time have it change to Latitude.
+- [x] **Improvments** - Set `host` and `URI` in the report to a code tag.
+- [x] **Feature** - Add email regex.
 - [ ] **BugFix** - Make argument parsing done in a manner that is not embarassing to a 3 years old.
-- [ ] **Improvments** - Set `host` and `URI` in the report to a code tag.
 - [ ] **Improvments** - Change verbosity option when exeuting on multiple files.
-- [ ] **Feature** - Add email regex (`r([a-zA-Z0-9\-\.\_]+(\@|at| at )[a-zA-Z0-9\-\.\_]{3,16}(\.|dot| dot )[a-zA-Z0-9\-\.\_]{2,3})`)
+- [ ] **Improvments** - Build a requirment file.
 - [ ] **Feature** - Enable a flag to disable 'problematic' false-positive matches such as MSISDN.
 
-### Sometimes
+### In the Distant Future - The year 2000
 - [ ] Real cookies support
 - [ ] Reconstruction
 - [ ] Handeling responses
 - [ ] Handeling JSON Requests
 - [ ] Handeling XML Requests
+- [ ] Have some sort of API to add search options

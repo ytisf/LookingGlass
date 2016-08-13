@@ -150,9 +150,9 @@ def _build_html(file_name):
 	markdown_text += "<h2>Possible Hits (%s)</h2>" % len(poss_packets)
 	for pos_ind in poss_packets:
 		markdown_text += "<h3>Packet #%s</h3>" % vars.config.PACKETS[pos_ind].index
-		markdown_text += "<p>Host: %s.</p>" % vars.config.PACKETS[pos_ind].host
-		markdown_text += "<p>URL: %s.</p>" % vars.config.PACKETS[pos_ind].path
-		markdown_text += "<p>Request Type: %s.</p>" % vars.config.PACKETS[pos_ind].request_method
+		markdown_text += "<p>Host: <code>%s</code>.</p>" % vars.config.PACKETS[pos_ind].host
+		markdown_text += "<p>URL: <code>%s</code>.</p>" % vars.config.PACKETS[pos_ind].path
+		markdown_text += "<p>Request Type: <code>%s</code>.</p>" % vars.config.PACKETS[pos_ind].request_method
 
 		markdown_text += "<h4>Get Parameters</h4>"
 		markdown_text += "<table><tr><th>Field</th><th>Value</th></tr>"

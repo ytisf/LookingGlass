@@ -184,14 +184,35 @@ class HandlePacket():
 			# No TCP?
 			pass
 
+	def _detect_param(self, field, val):
+		isb64 = _is_base64(val)  # Check if the data is base64 encoded
+		# Check if the data is binary. If not, replace the regexes to run on the decoded data.
+		if type(isb64) is str:
+			val = isb64
+
+		a = whoami(val)
+		if a is not OKAY:
+			if (a == "Longitude" or a == "Latitude") and self.l_or_l == False:
+				self.l_or_l = True
+			elif (a == "Longitude" or a == "Latitude") and self.l_or_l == True:
+				a = "Latitude"
+				self.loc = True
+			elif a == "Coordinate":
+				self.loc = True
+			if isb64:
+				self.marked_fields.append([field + " (b64)", a, val])
+			else:
+				self.marked_fields.append([field, a, val])
+
+
 	def _CheckFields(self):
 		"""
 		Checks the information on the fields and try to match them to a known
 		data type. If so, it will return it to another element of the object.
 		:return: Nothing
 		"""
-		l_or_l = False
-		loc = False
+		self.l_or_l = False
+		self.loc = False
 		if len(self.post_parameters) != 0:
 			for fv in self.post_parameters:
 				try:
@@ -199,25 +220,7 @@ class HandlePacket():
 					val = fv[1]
 				except:
 					continue
-
-				isb64 = _is_base64(val)  # Check if the data is base64 encoded
-
-				# Check if the data is binary. If not, replace the regexes to run on the decoded data.
-				if type(isb64) is str:
-					val = isb64
-
-				a = whoami(val)
-				if a is not OKAY:
-					if isb64:
-						self.marked_fields.append([field + " (b64)", a, val])
-					else:
-						self.marked_fields.append([field, a, val])
-					if (a == "Longitude" or a == "Latitude") and l_or_l == False:
-						l_or_l = True
-					elif (a == "Longitude" or a == "Latitude") and l_or_l == True:
-						loc = True
-					elif a == "Coordinate":
-						loc = True
+				self._detect_param(field, val)
 
 		if len(self.get_parameters) != 0:
 			for fv in self.get_parameters:
@@ -226,27 +229,9 @@ class HandlePacket():
 					val = fv[1]
 				except:
 					continue
+				self._detect_param(field, val)
 
-				isb64 = _is_base64(val)  # Check if the data is base64 encoded
-
-				# Check if the data is binary. If not, replace the regexes to run on the decoded data.
-				if type(isb64) is str:
-					val = isb64
-
-				a = whoami(val)
-				if a is not OKAY:
-					if isb64:
-						self.marked_fields.append([field + " (b64)", a, val])
-					else:
-						self.marked_fields.append([field, a, val])
-					if (a == "Longitude" or a == "Latitude") and l_or_l == False:
-						l_or_l = True
-					elif (a == "Longitude" or a == "Latitude") and l_or_l == True:
-						loc = True
-					elif a == "Coordinate":
-						loc = True
-
-		if not loc:
+		if not self.loc:
 			for fhv in self.marked_fields:
 				if fhv[1] == "Longitude" or fhv[1] == "Latitude":
 					self.marked_fields.remove(fhv)

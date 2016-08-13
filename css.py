@@ -9,7 +9,7 @@ css = """@font-face {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   color: #333;
-  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-family: \"Helvetica Neue\", Helvetica, \"Segoe UI\", Arial, freesans, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";
   font-size: 16px;
   line-height: 1.6;
   word-wrap: break-word;
@@ -69,13 +69,13 @@ css = """@font-face {
 }
 
 .markdown-body button:-moz-focusring,
-.markdown-body [type="button"]:-moz-focusring,
-.markdown-body [type="reset"]:-moz-focusring,
-.markdown-body [type="submit"]:-moz-focusring {
+.markdown-body [type=\"button\"]:-moz-focusring,
+.markdown-body [type=\"reset\"]:-moz-focusring,
+.markdown-body [type=\"submit\"]:-moz-focusring {
   outline: 1px dotted ButtonText;
 }
 
-.markdown-body [type="checkbox"] {
+.markdown-body [type=\"checkbox\"] {
   box-sizing: border-box;
   padding: 0;
 }
@@ -95,7 +95,7 @@ css = """@font-face {
 }
 
 .markdown-body input {
-  font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font: 13px/1.4 Helvetica, arial, nimbussansl, liberationsans, freesans, clean, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\";
 }
 
 .markdown-body a {
@@ -119,13 +119,13 @@ css = """@font-face {
 
 .markdown-body hr::before {
   display: table;
-  content: "";
+  content: \"\";
 }
 
 .markdown-body hr::after {
   display: table;
   clear: both;
-  content: "";
+  content: \"\";
 }
 
 .markdown-body h1,
@@ -196,14 +196,14 @@ css = """@font-face {
 }
 
 .markdown-body code {
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-family: Consolas, \"Liberation Mono\", Menlo, Courier, monospace;
   font-size: 12px;
 }
 
 .markdown-body pre {
   margin-top: 0;
   margin-bottom: 0;
-  font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font: 12px Consolas, \"Liberation Mono\", Menlo, Courier, monospace;
 }
 
 .markdown-body .pl-0 {
@@ -240,13 +240,13 @@ css = """@font-face {
 
 .markdown-body:before {
   display: table;
-  content: "";
+  content: \"\";
 }
 
 .markdown-body:after {
   display: table;
   clear: both;
-  content: "";
+  content: \"\";
 }
 
 .markdown-body>*:first-child {
@@ -482,7 +482,7 @@ css = """@font-face {
 .markdown-body code:before,
 .markdown-body code:after {
   letter-spacing: -0.2em;
-  content: "\00a0";
+  content: \"\00a0\";
 }
 
 .markdown-body pre>code {
@@ -651,7 +651,7 @@ css = """@font-face {
 .markdown-body kbd {
   display: inline-block;
   padding: 3px 5px;
-  font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font: 11px Consolas, \"Liberation Mono\", Menlo, Courier, monospace;
   line-height: 10px;
   color: #555;
   vertical-align: middle;

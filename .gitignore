@@ -3,3 +3,4 @@ DS_Store
 *.pcap
 .idea/
 *.css
+Report/*
