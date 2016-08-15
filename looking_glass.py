@@ -5,18 +5,16 @@ import os
 import sys
 import time
 import glob
-import codecs
 import config
 import getopt
 import hashlib
 import logging
-import argparse
 import datetime
 import unicodedata
 
 # Grouppings imports
 from threading import Thread
-from multiprocessing import Process, Queue, Pool
+from multiprocessing import Process, Queue
 
 # App imports
 import vars
@@ -247,7 +245,7 @@ def _print_help():
 	of the PCAPs you executed the program on. The HTML report contains just the results which
 	matches one of the data-types. In the CSV report you shall have all the requests divided
 	by param-value keys in case you would like to go through them manually or give them to
-	another application to analyze. 
+	another application to analyze.
 	""" % (banner, NUMERIC_VERSION, NAME_VERSION, AUTHORS[0], AUTHORS[1], sys.argv[0].split("/")[-1], sys.argv[0].split("/")[-1])
 	print help_menu
 	sys.exit(2)
