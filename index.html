@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>LookingGlass by ytisf</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/ytisf/LookingGlass">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/ytisf/LookingGlass/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/ytisf/LookingGlass/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>LookingGlass</h1>
+          <p>A PCAP parser for interesting data records</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/ytisf">ytisf</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a id="lookingglass" class="anchor" href="#lookingglass" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LookingGlass</h1>
+
+<h2>
+<a id="abstract" class="anchor" href="#abstract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Abstract</h2>
+
+<p>LookingGlass is a parsing tool to assist you with your traffic research. It is designed to look (at the moment) only on HTTP requests (parameterized only!) and highlight specific information types. Currently, LookingGlass is hunting these particular data types:</p>
+
+<ul>
+<li>IMEI</li>
+<li>Credit Card numbers</li>
+<li>Locations</li>
+<li>IMSI</li>
+<li>MSISDN</li>
+<li>Longitudes &amp; Latitudes</li>
+<li>Emails</li>
+</ul>
+
+<p>The data is searched within encodings such as <code>base64</code>, <code>urlencoding</code>, <code>base58</code> and we try to eliminate false-positives with searching if data might be data like <code>unix epoch time</code>.</p>
+
+<p>It will create two artifacts after execution:</p>
+
+<ol>
+<li>
+<code>filename.csv</code> - A CSV with all requests and parameters found, parsed.</li>
+<li>
+<code>filename.html</code> - An HTML report only with the possible hits of patterns described above.</li>
+</ol>
+
+<p><em>Little Comment</em> - Because we get to record directly on devices sometimes, and on Android the recorder does not add the IP layer, we have added support for that as well.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>It's acutally kinda straightforward. Just go into this folder with a terminal (assuming Linux/OSX) and with pip run:</p>
+
+<div class="highlight highlight-source-shell"><pre>pip install -r requirements.txt</pre></div>
+
+<h2>
+<a id="execution-types" class="anchor" href="#execution-types" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Execution Types</h2>
+
+<h3>
+<a id="single" class="anchor" href="#single" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Single</h3>
+
+<p>Running the script on 1 PCAP file. Example of usage will be:</p>
+
+<div class="highlight highlight-source-shell"><pre>looking_glass.py -f <span class="pl-s"><span class="pl-pds">'</span>FILENAME.pcap<span class="pl-pds">'</span></span></pre></div>
+
+<h3>
+<a id="folder-run" class="anchor" href="#folder-run" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Folder Run</h3>
+
+<p>Running the script against several PCAPs within a single directory. Please notice that due to the laziness of the authors we are only searching for files with a .pcap extension.</p>
+
+<p>Usage example:</p>
+
+<div class="highlight highlight-source-shell"><pre>looking_glass.py -d <span class="pl-s"><span class="pl-pds">'</span>DIRECTORY<span class="pl-pds">'</span></span></pre></div>
+
+<h3>
+<a id="customized-search" class="anchor" href="#customized-search" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Customized Search</h3>
+
+<p>Create a file of your choosing and add the terms you want to search. For string search just add:</p>
+
+<pre><code>normal, SM-J700, Device Model
+</code></pre>
+
+<p>The <code>'normal'</code> means text search, the <code>'SM-J700'</code> is the string to search and the <code>'Device Model'</code> is the title for that search.</p>
+
+<p>Another type of search is a regex search. For example:</p>
+
+<pre><code>regex, (com\.([a-zA-z]+\.){1,3}[a-zA-z]+), Android Package Name
+</code></pre>
+
+<p>After you have saved the file you can call it like this:</p>
+
+<div class="highlight highlight-source-shell"><pre>python looking_glass.py -f pcap_file.pcap -u user_search.txt</pre></div>
+
+<h2>
+<a id="license---gplv3" class="anchor" href="#license---gplv3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License - GPLv3</h2>
+
+<p><a href="https://www.github.com/yitsf">Yuval tisf Nativ</a>, <a href="https://www.github.com/daganp">Dagan Pasternak</a></p>
+
+<p>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+
+<p>This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+
+<p>You should have received a copy of the GNU General Public License
+along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+
+<h2>
+<a id="future-developments" class="anchor" href="#future-developments" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Future Developments</h2>
+
+<h3>
+<a id="version-10---venus" class="anchor" href="#version-10---venus" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.0 - Venus</h3>
+
+<ul>
+<li>[x] Base.</li>
+</ul>
+
+<h3>
+<a id="version-11---bromhilda" class="anchor" href="#version-11---bromhilda" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.1 - Bromhilda</h3>
+
+<ul>
+<li>[x] <strong>BugFix</strong> - Fix CSS writer, which is an idiotic idea anyway.</li>
+<li>[x] <strong>BugFix</strong> - If encountering Longitude for the 2nd time have it change to Latitude.</li>
+<li>[x] <strong>Improvments</strong> - Set <code>host</code> and <code>URI</code> in the report to a code tag.</li>
+<li>[x] <strong>Feature</strong> - Add email regex.</li>
+<li>[x] <strong>BugFix</strong> - Make argument parsing done in a manner that is not embarassing to a 3 years old.</li>
+<li>[x] <strong>Improvments</strong> - Change verbosity option when exeuting on multiple files.</li>
+<li>[x] <strong>Feature</strong> - Enable a flag to disable 'problematic' false-positive matches such as MSISDN.</li>
+<li>[x] <strong>Improvments</strong> - Build a requirment file.</li>
+</ul>
+
+<h3>
+<a id="in-the-distant-future---the-year-2000" class="anchor" href="#in-the-distant-future---the-year-2000" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>In the Distant Future - The year 2000</h3>
+
+<ul>
+<li>[ ] Real cookies support</li>
+<li>[ ] Reconstruction</li>
+<li>[ ] Handeling responses</li>
+<li>[ ] Handeling JSON Requests</li>
+<li>[ ] Handeling XML Requests</li>
+<li>[ ] Have some sort of API to add search options</li>
+</ul>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
