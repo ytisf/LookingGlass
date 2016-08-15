@@ -3,10 +3,10 @@ import config
 import base64
 import urllib
 import binascii
-from vars import *
+from core.vars import *
 from scapy.all import *
-from tester import *
-import vars
+from core.tester import *
+import core.vars
 
 try:
 	# This import works from the project directory
@@ -80,7 +80,7 @@ class HandlePacket():
 					for i in params:
 						self.get_parameters.append(i.split("="))
 
-					vars.config.PACKETS.append(self)
+					core.vars.config.PACKETS.append(self)
 
 				else:
 					# Non parameterized GET
@@ -109,7 +109,7 @@ class HandlePacket():
 				for i in params:
 					self.post_parameters.append(i.split("="))
 
-				vars.config.PACKETS.append(self)
+				core.vars.config.PACKETS.append(self)
 
 			else:
 				pass  # print self.raw_packet[http.HTTPRequest].getfieldval('Method')
@@ -139,7 +139,7 @@ class HandlePacket():
 			ret_gets = []
 			for i in params:
 				self.get_parameters.append(i.split("="))
-			vars.config.PACKETS.append(self)
+			core.vars.config.PACKETS.append(self)
 
 		elif "POST " in str(self.raw_packet.original) and "Host: " in str(self.raw_packet.original) and "HTTP/1. " in str(self.raw_packet.original):
 
@@ -178,7 +178,7 @@ class HandlePacket():
 			for i in params:
 				self.post_parameters.append(i.split("="))
 
-			vars.config.PACKETS.append(self)
+			core.vars.config.PACKETS.append(self)
 
 		else:
 			# No TCP?
@@ -190,7 +190,7 @@ class HandlePacket():
 		if type(isb64) is str:
 			val = isb64
 
-		a = whoami(val)
+		a = whoami(self.index, val)
 		if a is not OKAY:
 			if (a == "Longitude" or a == "Latitude") and self.l_or_l == False:
 				self.l_or_l = True

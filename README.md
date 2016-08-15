@@ -40,6 +40,24 @@ Usage example:
 looking_glass.py -d 'DIRECTORY'
 ```
 
+### Customized Search
+Create a file of your choosing and add the terms you want to search. For string search just add:
+```
+normal, SM-J700, Device Model
+```
+The `'normal'` means text search, the `'SM-J700'` is the string to search and the `'Device Model'` is the title for that search.
+
+Another type of search is a regex search. For example:
+```
+regex, (com\.([a-zA-z]+\.){1,3}[a-zA-z]+), Android Package Name
+```
+
+After you have saved the file you can call it like this:
+```bash
+python looking_glass.py -f pcap_file.pcap -u user_search.txt
+```
+
+
 ## License - GPLv3
 [Yuval tisf Nativ](https://www.github.com/yitsf), [Dagan Pasternak](https://www.github.com/daganp)
 

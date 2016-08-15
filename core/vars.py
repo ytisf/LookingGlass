@@ -1,6 +1,6 @@
 
 import config
-from css import css
+from core.css import css
 
 # GLOBALS
 OKAY                    = 0
@@ -14,11 +14,16 @@ SEPARATOR               = " ; "
 TEMP_MARKDOWN_LOC       = 'temp.md'
 HTML_REPORT             = REPORT_FOLER + "Report.html"
 HARCODED_FUCKING_CSS    = css
+READ                    = 'r'
+READ_BINARY             = 'rb'
+WRITE_BINARY            = 'wb'
+WRITE                   = 'w'
 
 # SHARED
 config.PACKETS          = []
 FALSE_POSITIVES         = False
 VERBOSITY               = False
+config.USER_REQUESTS    = []
 
 # VERSION INFORMATION
 NAME                    = "LookingGlass"

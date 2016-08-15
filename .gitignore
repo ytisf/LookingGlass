@@ -1,6 +1,9 @@
 *.pyc
-DS_Store
+.DS_Store
 *.pcap
 .idea/
 *.css
-Report/*
+Report/*.csv
+Report/*.html
+Report/*.css
+test_search_file

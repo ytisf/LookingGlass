@@ -2,7 +2,8 @@
 import re
 import datetime
 
-from vars import *
+import core.vars
+from core.vars import *
 
 from stdnum import imei, imsi, luhn
 
@@ -101,7 +102,7 @@ def _is_regex_matching(string, regex):
 		return False
 
 
-def whoami(string):
+def whoami(index, string):
 	"""
 	Checks matches on string
 	:param string: string to check
@@ -148,6 +149,17 @@ def whoami(string):
 
 	if _is_regex_matching(string, EMAIL):
 		return "Email"
+
+
+	# Handle user-based rules:
+	if core.vars.config.USER_REQUESTS is not []:
+		for t, search, name in core.vars.config.USER_REQUESTS:
+			if t == "normal":
+				if search in string:
+					return name
+			elif t == "regex":
+				if _is_regex_matching(string, search):
+					return name
 
 
 	# Here we put the searches that yield too many false positives

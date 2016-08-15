@@ -17,8 +17,8 @@ from threading import Thread
 from multiprocessing import Process, Queue
 
 # App imports
-import vars
-from packets_do import *
+import core.vars
+from core.packets_do import *
 
 
 try:
@@ -85,7 +85,7 @@ def _save(file_name):
 	report_file_name = file_name.split("/")[-1]
 	report_file_name = report_file_name[:-5]
 	f = open(REPORT_FOLER+report_file_name+".csv", WRITE_BINARY)
-	for packt in vars.config.PACKETS:
+	for packt in core.vars.config.PACKETS:
 		line = str(packt.index) + SEPARATOR + packt.request_method + SEPARATOR
 		line += packt.host + SEPARATOR + packt.path + SEPARATOR
 		if packt.request_method == "GET":
@@ -125,7 +125,7 @@ def _build_html(file_name):
 	gets = 0
 	posts = 0
 	counter = 0
-	for pckt in vars.config.PACKETS:
+	for pckt in core.vars.config.PACKETS:
 		if len(pckt.marked_fields) > 0:
 			poss_packets.append(counter)
 		if pckt.request_method is "GET":
@@ -150,14 +150,14 @@ def _build_html(file_name):
 	markdown_text += "<p>Total of POSTs: <code>%s</code></p>\n" % posts
 	markdown_text += "<h2>Possible Hits (%s)</h2>" % len(poss_packets)
 	for pos_ind in poss_packets:
-		markdown_text += "<h3>Packet #%s</h3>" % vars.config.PACKETS[pos_ind].index
-		markdown_text += "<p>Host: <code>%s</code>.</p>" % vars.config.PACKETS[pos_ind].host
-		markdown_text += "<p>URL: <code>%s</code>.</p>" % vars.config.PACKETS[pos_ind].path
-		markdown_text += "<p>Request Type: <code>%s</code>.</p>" % vars.config.PACKETS[pos_ind].request_method
+		markdown_text += "<h3>Packet #%s</h3>" % core.vars.config.PACKETS[pos_ind].index
+		markdown_text += "<p>Host: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].host
+		markdown_text += "<p>URL: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].path
+		markdown_text += "<p>Request Type: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].request_method
 
 		markdown_text += "<h4>Get Parameters</h4>"
 		markdown_text += "<table><tr><th>Field</th><th>Value</th></tr>"
-		for fv in vars.config.PACKETS[pos_ind].get_parameters:
+		for fv in core.vars.config.PACKETS[pos_ind].get_parameters:
 			try:
 				field = fv[0]
 				val = fv[1]
@@ -171,7 +171,7 @@ def _build_html(file_name):
 
 		markdown_text += "<h4>Post Parameters</h4>"
 		markdown_text += "<table><tr><th>Field</th><th>Value</th></tr>"
-		for fv in vars.config.PACKETS[pos_ind].post_parameters:
+		for fv in core.vars.config.PACKETS[pos_ind].post_parameters:
 			try:
 				field = fv[0]
 				val = fv[1]
@@ -184,7 +184,7 @@ def _build_html(file_name):
 		markdown_text += "</table>"
 
 		markdown_text += "<h3>Possible Hits</h3>"
-		for field, pos, val in vars.config.PACKETS[pos_ind].marked_fields:
+		for field, pos, val in core.vars.config.PACKETS[pos_ind].marked_fields:
 			markdown_text += "<p><code>%s</code> (%s) might be %s.</p>" % (_to_presentable(field),_to_presentable(val),_to_presentable(pos))
 		markdown_text += "<hr>"
 
@@ -238,6 +238,7 @@ def _print_help():
 		\033[36m-f, --file           Single file mode. Path to PCAP file.
 		-d, --directory      Directory to scan PCAPs in.
 		-v, --verbose        Show more information while running.
+		-u, --user           User configurations to search.
 		-h, --help           Shows this help menu.
 		--falpos             Ignore data types that are not reliable such as MSISDN.\033[0m
 
@@ -279,6 +280,10 @@ def _execution_wrapper(file_name):
 	i = 0
 	for pckt in pckts:
 		i += 1
+		# Non threading for test:
+		#_do_packet(pckt, i)
+
+		# Threading
 		th = Thread(target=_do_packet, args=(pckt, i))
 		th.daemon = True
 		th.start()
@@ -287,7 +292,7 @@ def _execution_wrapper(file_name):
 		if i % PROGRESS_PRINT == 0:
 			gets = 0
 			posts = 0
-			for pckt in vars.config.PACKETS:
+			for pckt in core.vars.config.PACKETS:
 				if pckt.request_method == "GET":
 					gets += 1
 				elif pckt.request_method == "POST":
@@ -306,8 +311,56 @@ def _execution_wrapper(file_name):
 	_build_html(file_name)
 	if verbosity:
 		sys.stdout.write("\033[92m[+]\033[0m\tCreated a full HTML report.\n")
-	vars.config.PACKETS = []
+	core.vars.config.PACKETS = []
 	sys.stdout.write("\033[92m[+]\033[0m\tFinished with '%s'.\n" % file_name)
+
+
+def _read_user_search_file(path_to_conf):
+
+	global verbosity
+
+	rules = []
+
+	try:
+		f = open(path_to_conf, READ)
+		raw_conf = f.read()
+		f.close()
+	except IOError, e:
+		sys.stdout.write("\033[91m[!]\033[0m\tCould read configuration file '%s'.\nError:%s.\n" % (path_to_conf, e))
+		sys.exit(ERR)
+
+	i = 0
+	for line in raw_conf.split("\n"):
+		if len(line) == 0:
+			continue
+		try:
+			t, search_term, name = line.split(", ")
+		except:
+			sys.stdout.write("\033[91m[-]\033[0m\tError parsing line %s in the configuration file. Skipping.\n" % i)
+			i += 1
+			continue
+
+		if t == "normal":
+			rules.append([t, search_term, name])
+		elif t == "regex":
+			try:
+				reg = re.compile(search_term)
+				rules.append([t, reg, name])
+			except:
+				sys.stdout.write("\033[91m[-]\033[0m\tThe term '%s' is not a valid regex.\n" % search_term)
+				i += 1
+				continue
+		else:
+			sys.stdout.write("\033[91m[-]\033[0m\tFirst delimiter must be 'regex' or 'normal', not '%s'.\n" % t)
+			i += 1
+			continue
+
+		i += 1
+
+	if verbosity:
+		sys.stdout.write("\033[92m[+]\033[0m\tParsed %s user-based rules.\n" % len(rules))
+
+	return rules
 
 
 def _create_css():
@@ -315,8 +368,8 @@ def _create_css():
 	This functino creates the CSS file for the report.
 	:return: Nothing
 	"""
-	f = open(vars.REPORT_FOLER + "/" + "markdown.css", WRITE_BINARY)
-	f.write(vars.HARCODED_FUCKING_CSS)
+	f = open(core.vars.REPORT_FOLER + "/" + "markdown.css", WRITE_BINARY)
+	f.write(core.vars.HARCODED_FUCKING_CSS)
 	f.close()
 
 
@@ -333,13 +386,15 @@ def main():
 	folder_flag = False
 	help_flag = False
 	verbosity = False
+	user_requests = False
 	location = ""
+	rules_location = ""
 	false_positives = False			# These are fields like MSISDN which might
 									# yield too many flase-positives. If this is
 									# on, ignore those fields.
 
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hf:d:v", ["file=", "directory=", "verbose", "falpos"])
+		opts, args = getopt.getopt(sys.argv[1:], "hf:d:u:v", ["file=", "directory=", "user=", "verbose", "falpos"])
 	except getopt.GetoptError:
 		_print_help()
 
@@ -355,6 +410,10 @@ def main():
 		elif opt in ("-v", "--verbose"):
 			verbosity = True
 			VERBOSITY = True
+		elif opt in ("-u", "--user"):
+			core.vars.config.USER_REQUESTS = _read_user_search_file(arg)
+			user_requests = True
+			rules_location = arg
 		elif opt == "--falpos":
 			false_positives = True
 			FALSE_POSITIVES = True
@@ -363,14 +422,21 @@ def main():
 	if file_flag is False and folder_flag is False:
 		_print_help()
 
+
+	# Print banner & execution mode
+	_print_banner()
+
 	if verbosity:
 		sys.stdout.write("\033[92m[+]\033[0m\tRunning in verbose mode.\n")
 
 	if false_positives:
 		sys.stdout.write("\033[92m[+]\033[0m\tDisabling false-positive prone searches.\n")
 
+	if user_requests:
+		sys.stdout.write("\033[92m[+]\033[0m\tUsing %s rules from file '%s'.\n" % (len(core.vars.config.USER_REQUESTS), rules_location))
+
+
 	# If everything went okay the program will not attempt to start
-	_print_banner()
 	if file_flag:
 		sys.stdout.write("\033[92m[+]\033[0m\tRunning in single file mode.\n")
 		_execution_wrapper(location)
