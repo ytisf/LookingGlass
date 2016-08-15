@@ -1,20 +1,24 @@
 #!/usr/bin/python
 
+# General imports
 import os
 import sys
 import time
+import glob
+import codecs
 import config
+import getopt
+import hashlib
+import logging
+import argparse
 import datetime
 import unicodedata
-import codecs
-import logging
-import hashlib
-import glob
 
-
-from multiprocessing import Process, Queue, Pool
+# Grouppings imports
 from threading import Thread
+from multiprocessing import Process, Queue, Pool
 
+# App imports
 import vars
 from packets_do import *
 
@@ -53,14 +57,13 @@ def load_pcap(path_to_pcap):
 	"""
 	try:
 		a = PcapReader(path_to_pcap)
-		logging.info("PCAP '%s' has been read." % path_to_pcap)
 		file_size = os.path.getsize(path_to_pcap)
 		b = file_size/1024/1024
 		sys.stdout.write("\033[92m[+]\033[0m\tFile '%s' should take around %s minutes to analyze.\n" % (path_to_pcap, b))
 		return a
 	except IOError, e:
 		sys.stderr.write("\033[91m[!]\033[0m\tCould not read PCAP '%s'.\n" % path_to_pcap)
-		sys.exit(ERR)
+		return ERR
 
 
 def _do_packet(pckt, i):
@@ -227,17 +230,27 @@ def _print_help():
 				- [ ] IMSI
 				- [ ] MSISDN
 				- [ ] Longitudes & Latitudes
+				- [ ] Email addresses
 
 	Please run the script this way:
 		\033[36m%s -f file.pcap
 		%s -d directory\033[0m
 
-	It will (OVER)write the report at the \033[36m'Report'\033[0m folder.
-	\033[36m'Report.csv'\033[0m is a CSV with all fields and \033[36m'Report.html'\033[0m is the
-	formalized HTML report with the interesting fields.
+	These are the possible arguments:
+		\033[36m-f, --file           Single file mode. Path to PCAP file.
+		-d, --directory      Directory to scan PCAPs in.
+		-v, --verbose        Show more information while running.
+		-h, --help           Shows this help menu.
+		--falpos             Ignore data types that are not reliable such as MSISDN.\033[0m
+
+	In the folder \033[36m'Report'\033[0m you will have a CSV file and an HTML file for each
+	of the PCAPs you executed the program on. The HTML report contains just the results which
+	matches one of the data-types. In the CSV report you shall have all the requests divided
+	by param-value keys in case you would like to go through them manually or give them to
+	another application to analyze. 
 	""" % (banner, NUMERIC_VERSION, NAME_VERSION, AUTHORS[0], AUTHORS[1], sys.argv[0].split("/")[-1], sys.argv[0].split("/")[-1])
 	print help_menu
-	sys.exit()
+	sys.exit(2)
 
 
 def _print_banner():
@@ -256,7 +269,12 @@ def _print_banner():
 
 def _execution_wrapper(file_name):
 
+	global verbosity
+	global false_positives
+
 	pckts = load_pcap(file_name)  # Read packets from PCAP
+	if pckts == ERR:
+		return ERR
 
 	jobs = []
 
@@ -276,60 +294,105 @@ def _execution_wrapper(file_name):
 					gets += 1
 				elif pckt.request_method == "POST":
 					posts += 1
-			sys.stdout.write("\033[92m[+]\033[0m\tDone with %s packets.\n" % i)
+			if verbosity:
+				sys.stdout.write("\033[92m[+]\033[0m\tDone with %s packets.\n" % i)
 
 	for j in jobs:
 		j.join()
 
-	sys.stdout.write("\033[92m[+]\033[0m\tAll threads done.\n")
+	if verbosity:
+		sys.stdout.write("\033[92m[+]\033[0m\tAll threads done.\n")
 	_save(file_name)
-	sys.stdout.write("\033[92m[+]\033[0m\tCreated a full CSV report.\n")
+	if verbosity:
+		sys.stdout.write("\033[92m[+]\033[0m\tCreated a full CSV report.\n")
 	_build_html(file_name)
-	sys.stdout.write("\033[92m[+]\033[0m\tCreated a full HTML report.\n")
+	if verbosity:
+		sys.stdout.write("\033[92m[+]\033[0m\tCreated a full HTML report.\n")
 	vars.config.PACKETS = []
+	sys.stdout.write("\033[92m[+]\033[0m\tFinished with '%s'.\n" % file_name)
+
 
 def _create_css():
+	"""
+	This functino creates the CSS file for the report.
+	:return: Nothing
+	"""
 	f = open(vars.REPORT_FOLER + "/" + "markdown.css", WRITE_BINARY)
 	f.write(vars.HARCODED_FUCKING_CSS)
 	f.close()
 
 
 def main():
+
+	# Set 'em global
 	global file_flag
 	global folder_flag
+	global verbosity
+	global false_positives
+
+	# Initial values
 	file_flag = False
 	folder_flag = False
+	help_flag = False
+	verbosity = False
+	location = ""
+	false_positives = False			# These are fields like MSISDN which might
+									# yield too many flase-positives. If this is
+									# on, ignore those fields.
 
-	# Shitty way to do argument parsing but couldn't give a fuck
-	if len(sys.argv) != 3:
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], "hf:d:v", ["file=", "directory=", "verbose", "falpos"])
+	except getopt.GetoptError:
 		_print_help()
 
-	if sys.argv[1] == "-f":
-		file_flag = True
+	for opt, arg in opts:
+		if opt in ("-h", "--help"):
+			_print_help()
+		elif opt in ("-f", "--file"):
+			file_flag = True
+			location = arg
+		elif opt in ("-d", "--directory"):
+			folder_flag = True
+			location = arg
+		elif opt in ("-v", "--verbose"):
+			verbosity = True
+			VERBOSITY = True
+		elif opt == "--falpos":
+			false_positives = True
+			FALSE_POSITIVES = True
 
-	elif sys.argv[1] == "-d":
-		folder_flag = True
+	# Checks if got one or the other
+	if file_flag is False and folder_flag is False:
+		_print_help()
 
+	if verbosity:
+		sys.stdout.write("\033[92m[+]\033[0m\tRunning in verbose mode.\n")
+
+	if false_positives:
+		sys.stdout.write("\033[92m[+]\033[0m\tDisabling false-positive prone searches.\n")
+
+	# If everything went okay the program will not attempt to start
 	_print_banner()
 	if file_flag:
 		sys.stdout.write("\033[92m[+]\033[0m\tRunning in single file mode.\n")
-		_execution_wrapper(sys.argv[2])
+		_execution_wrapper(location)
 		_create_css()
 
 	elif folder_flag:
 		try:
-			str_read = "%s/*.pcap" % sys.argv[2]
+			str_read = "%s/*.pcap" % location
 			files = glob(str_read)
 		except:
-			sys.stdout.write("\033[91m[!]\033[0m\tCould not list files in directory '%s'.\n" % sys.argv[2])
+			sys.stdout.write("\033[91m[!]\033[0m\tCould not list files in directory '%s'.\n" % location)
 			sys.exit()
 
 		# Check if there are files in the folder.
 		if len(files) == 0:
 			_print_help()
+			sys.stderr.write("\033[91m[!]\033[0m\tCould find and files in the directory '%s'.\n" % location)
 			sys.exit()
 
-		sys.stdout.write("\033[92m[+]\033[0m\tRunning on directory '%s'.\n" % sys.argv[2])
+		sys.stdout.write("\033[92m[+]\033[0m\tRunning on directory '%s'.\n" % location)
 		_create_css()
 		for file in files:
 			sys.stdout.write("\033[92m[+]\033[0m\tExecuting file '%s'.\n" % file)

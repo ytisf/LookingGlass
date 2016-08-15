@@ -70,6 +70,11 @@ def too_many_repetitions(number):
 
 
 def _is_unix_time(string):
+	"""
+	Try and check is a data is unix-epoch time
+	:param string: String input
+	:return: True or False
+	"""
 	try:
 		a = datetime.datetime.fromtimestamp(int(string[:10]))
 	except:
@@ -81,6 +86,21 @@ def _is_unix_time(string):
 		return False
 
 
+def _is_regex_matching(string, regex):
+	"""
+	Check if a particular string is matching to a regex
+	:param string: String input
+	:param regex: regex to check against
+	:return: True or False
+	"""
+	try:
+		a = re.search(r'^(([\+\-])?\d{1,3}\.\d{2,17})$', string)
+		b = a.group(1)
+		return True
+	except:
+		return False
+
+
 def whoami(string):
 	"""
 	Checks matches on string
@@ -88,58 +108,55 @@ def whoami(string):
 	:return: type
 	"""
 
+	# Try to convert data to string or unicode, else, return since
+	# we cannot search the data for matching identifiers.
 	if type(string) is str or type(string) is unicode:
 		pass
 	else:
-		return OKAY
+		try:
+			string = str(string)
+		except:
+			return OKAY
 
+
+	# Here we try to disable false-positives
 	if _is_unix_time(string):
-		# This is a unix epoch time string
 		return OKAY
 
+
+	# Go for the "reliable" information schemes
 	a = imei.is_valid(string)
 	if a:
 		return "IMEI"
+
 	a = imsi.is_valid(string)
 	if a:
 		return "IMSI"
+
 	a = is_validCC(string)
 	if a:
 		return "CC"
 
-	try:
-		a = re.search(r'^(([\+\-])?\d{1,3}\.\d{2,17})$', string)
-		b = a.group(1)
+	if _is_regex_matching(string, SINGLE_COORD):
 		return "Longitude"
-	except:
-		pass
 
-	try:
-		a = re.search(r'^(([\+\-])?\d{1,3}\.\d{2,17})$', string)
-		b = a.group(1)
+	if _is_regex_matching(string, SINGLE_COORD):
 		return "Latitude"
-	except:
-		pass
 
-	try:
-		a = re.search(r'^(([\+\-])?\d{1,3}\.\d{2,17}).+(([\+\-])?\d{1,3}\.\d{2,17})$', string)
-		b = a.group(1)
+	if _is_regex_matching(string, COORDINATES):
 		return "Coordinate"
-	except:
-		pass
 
-	try:
-		a = re.search(r'([a-zA-Z0-9\-\.\_]+(\@| at )[a-zA-Z0-9\-\.\_]{3,16}(\.|dot| dot )[a-zA-Z0-9\-\.\_]{2,3})', string)
-		b = a.group(1)
+	if _is_regex_matching(string, EMAIL):
 		return "Email"
-	except:
-		pass
 
-	if special_match(string):
-		if 10 <= len(string) <= 18:
-			if is_valid_phone(string):
-				if string[0] != "-":
-					if not too_many_repetitions(string):
-						return "MSISDN"
+
+	# Here we put the searches that yield too many false positives
+	if FALSE_POSITIVES:
+		if special_match(string):
+			if 10 <= len(string) <= 18:
+				if is_valid_phone(string):
+					if string[0] != "-":
+						if not too_many_repetitions(string):
+							return "MSISDN"
 
 	return OKAY

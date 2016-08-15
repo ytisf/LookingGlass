@@ -8,6 +8,7 @@ LookingGlass is a parsing tool to assist you with your traffic research. It is d
   - IMSI
   - MSISDN
   - Longitudes & Latitudes
+  - Emails
 
 The data is searched within encodings such as `base64`, `urlencoding`, `base58` and we try to eliminate false-positives with searching if data might be data like `unix epoch time`.
 
@@ -17,6 +18,12 @@ It will create two artifacts after execution:
   2. `filename.html` - An HTML report only with the possible hits of patterns described above.
 
 *Little Comment* - Because we get to record directly on devices sometimes, and on Android the recorder does not add the IP layer, we have added support for that as well.
+
+## Installation
+It's acutally kinda straightforward. Just go into this folder with a terminal (assuming Linux/OSX) and with pip run:
+```bash
+pip install -r requirements.txt
+```
 
 ## Execution Types
 ### Single
@@ -59,10 +66,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 - [x] **BugFix** - If encountering Longitude for the 2nd time have it change to Latitude.
 - [x] **Improvments** - Set `host` and `URI` in the report to a code tag.
 - [x] **Feature** - Add email regex.
-- [ ] **BugFix** - Make argument parsing done in a manner that is not embarassing to a 3 years old.
-- [ ] **Improvments** - Change verbosity option when exeuting on multiple files.
-- [ ] **Improvments** - Build a requirment file.
-- [ ] **Feature** - Enable a flag to disable 'problematic' false-positive matches such as MSISDN.
+- [x] **BugFix** - Make argument parsing done in a manner that is not embarassing to a 3 years old.
+- [x] **Improvments** - Change verbosity option when exeuting on multiple files.
+- [x] **Feature** - Enable a flag to disable 'problematic' false-positive matches such as MSISDN.
+- [x] **Improvments** - Build a requirment file.
 
 ### In the Distant Future - The year 2000
 - [ ] Real cookies support

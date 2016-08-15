@@ -17,11 +17,17 @@ HARCODED_FUCKING_CSS    = css
 
 # SHARED
 config.PACKETS          = []
-
+FALSE_POSITIVES         = False
+VERBOSITY               = False
 
 # VERSION INFORMATION
 NAME                    = "LookingGlass"
-NUMERIC_VERSION         = 1.0
-NAME_VERSION            = "Venus"
+NUMERIC_VERSION         = 1.1
+NAME_VERSION            = "Bromhilda"
 AUTHORS                 = ["Yuval tisf Nativ", "Dagan Pasternak"]
 THIS_YEAR               = 2016
+
+# REGEXES:
+SINGLE_COORD            = r'^(([\+\-])?\d{1,3}\.\d{2,17})$'
+COORDINATES             = r'^(([\+\-])?\d{1,3}\.\d{2,17}).+(([\+\-])?\d{1,3}\.\d{2,17})$'
+EMAIL                   = r'([a-zA-Z0-9\-\.\_]+(\@| at )[a-zA-Z0-9\-\.\_]{3,16}(\.|dot| dot )[a-zA-Z0-9\-\.\_]{2,3})'
