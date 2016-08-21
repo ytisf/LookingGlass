@@ -95,7 +95,7 @@ def _is_regex_matching(string, regex):
 	:return: True or False
 	"""
 	try:
-		a = re.search(r'^(([\+\-])?\d{1,3}\.\d{2,17})$', string)
+		a = re.search(regex, string)
 		b = a.group(1)
 		return True
 	except:

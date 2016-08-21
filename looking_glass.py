@@ -137,7 +137,7 @@ def _build_html(file_name):
 	markdown_text += "<html>"
 	markdown_text += "<head><link rel=\"stylesheet\" href=\"markdown.css\"><style>body {box-sizing: border-box;min-width: 200px;max-width: 980px;margin: 0 auto;padding: 45px;}</style></head>"
 	markdown_text += "<body><article class=\"markdown-body\">"
-	markdown_text += "<h1>Report - <code>%s.pcap</code></h1>" % file_name
+	markdown_text += "<h1>Report - <code>%s</code></h1>" % file_name
 	markdown_text += "<h2>Summary</h2>"
 	if file_flag:
 		markdown_text += "<p>PCAP size: <code>%s</code></p>\n" % os.path.getsize(file_name)
@@ -281,13 +281,13 @@ def _execution_wrapper(file_name):
 	for pckt in pckts:
 		i += 1
 		# Non threading for test:
-		#_do_packet(pckt, i)
+		_do_packet(pckt, i)
 
 		# Threading
-		th = Thread(target=_do_packet, args=(pckt, i))
-		th.daemon = True
-		th.start()
-		jobs.append(th)
+		# th = Thread(target=_do_packet, args=(pckt, i))
+		# th.daemon = True
+		# th.start()
+		# jobs.append(th)
 
 		if i % PROGRESS_PRINT == 0:
 			gets = 0
