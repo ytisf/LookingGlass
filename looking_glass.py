@@ -281,13 +281,13 @@ def _execution_wrapper(file_name):
 	for pckt in pckts:
 		i += 1
 		# Non threading for test:
-		_do_packet(pckt, i)
+		# _do_packet(pckt, i)
 
 		# Threading
-		# th = Thread(target=_do_packet, args=(pckt, i))
-		# th.daemon = True
-		# th.start()
-		# jobs.append(th)
+		th = Thread(target=_do_packet, args=(pckt, i))
+		th.daemon = True
+		th.start()
+		jobs.append(th)
 
 		if i % PROGRESS_PRINT == 0:
 			gets = 0
