@@ -1,5 +1,6 @@
 
 import re
+import sys
 import datetime
 
 import core.vars
@@ -126,13 +127,20 @@ def whoami(index, string):
 
 
 	# Go for the "reliable" information schemes
-	a = imei.is_valid(string)
-	if a:
-		return "IMEI"
+	if _is_regex_matching(string, IMEI_NOT_REALLY_REGEX):
+		b = re.search(IMEI_NOT_REALLY_REGEX, string)
+		j = b.group(1)
+		a = imei.is_valid(j)
+		if a:
+			return "IMEI"
 
-	a = imsi.is_valid(string)
-	if a:
-		return "IMSI"
+	# Sometimes, the stdnum returns a nasty error
+	try:
+		a = imsi.is_valid(string)
+		if a:
+			return "IMSI"
+	except:
+		pass
 
 	a = is_validCC(string)
 	if a:
@@ -146,6 +154,9 @@ def whoami(index, string):
 
 	if _is_regex_matching(string, COORDINATES):
 		return "Coordinate"
+
+	if _is_regex_matching(string, MAC_ADDR):
+		return "MAC Address"
 
 	if _is_regex_matching(string, EMAIL):
 		return "Email"
@@ -172,3 +183,8 @@ def whoami(index, string):
 							return "MSISDN"
 
 	return OKAY
+
+
+if __name__ == "__main__":
+	sys.stderr.write("This is a module...\n")
+	sys.exit(ERR)

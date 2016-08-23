@@ -1,4 +1,5 @@
 import time
+import json
 import config
 import base64
 import urllib
@@ -30,6 +31,18 @@ def _is_base64(s):
 		return False
 	except UnicodeEncodeError:
 		return False
+
+
+def _is_json(myjson):
+	if "{" in myjson and "}" in myjson:
+		pass
+	else:
+		return False
+	try:
+		json_object = json.loads(myjson)
+	except ValueError, e:
+		return False
+	return True
 
 
 class HandlePacket():
@@ -95,6 +108,7 @@ class HandlePacket():
 				self.content_type = self.raw_packet[http.HTTPRequest].getfieldval('Content-Type')
 				self.payload = self.raw_packet[http.HTTPRequest].payload
 
+				# Get GET Parameters
 				temp_get = str(self.raw_packet[http.HTTPRequest].getfieldval('Path'))
 				temp_get = urllib.unquote_plus(temp_get)
 				params = temp_get[temp_get.find("?") + 1:]
@@ -102,12 +116,29 @@ class HandlePacket():
 				for i in params:
 					self.get_parameters.append(i.split("="))
 
+				# Get POST Parameters
 				temp_get = str(self.raw_packet[http.HTTPRequest].payload)
 				temp_get = urllib.unquote_plus(temp_get)
-				params = temp_get[temp_get.find("?") + 1:]
-				params = params.split("&")
-				for i in params:
-					self.post_parameters.append(i.split("="))
+
+				if _is_json(temp_get):
+					# Is JSON
+					for key, value in json.loads(temp_get).iteritems():
+						self.post_parameters.append([key, value])
+
+				else:
+					# Not JSON
+					params = temp_get[temp_get.find("?") + 1:]
+					params = params.split("&")
+					for i in params:
+						try:
+							key, val = i.split("=")
+							if _is_json(val):
+								self.post_parameters.append([key + "-JSON", val])
+								for k, v in json.loads(val).iteritems():
+									self.post_parameters.append(["%s:%s" %(key, k), v])
+
+						except ValueError:
+							self.post_parameters.append(i.split("="))
 
 				core.vars.config.PACKETS.append(self)
 
@@ -168,15 +199,28 @@ class HandlePacket():
 			for i in params:
 				self.get_parameters.append(i.split("="))
 
-			# Handle POST parameters
-			post_line = urllib.unquote_plus(semi[-1])
-			if temp_get.find("?") == -1:
-				return
-			params = temp_get[temp_get.find("?") + 1:]
-			params = params.split("&")
-			ret_gets = []
-			for i in params:
-				self.post_parameters.append(i.split("="))
+			# Get POST Parameters
+			temp_get = urllib.unquote_plus(semi[-1])
+
+			if _is_json(temp_get):
+				# Is JSON
+				for key, value in json.loads(temp_get).iteritems():
+					self.post_parameters.append([key, value])
+
+			else:
+				# Not JSON
+				params = temp_get[temp_get.find("?") + 1:]
+				params = params.split("&")
+				for i in params:
+					try:
+						key, val = i.split("=")
+						if _is_json(val):
+							self.post_parameters.append([key, "-JSON", val])
+							for k, v in json.loads(val).iteritems():
+								self.post_parameters.append(["%s:%s" %(key, k), v])
+
+					except ValueError:
+						self.post_parameters.append(i.split("="))
 
 			core.vars.config.PACKETS.append(self)
 
@@ -190,6 +234,8 @@ class HandlePacket():
 		if type(isb64) is str:
 			val = isb64
 
+		if "-JSON" in field:
+			return
 		a = whoami(self.index, val)
 		if a is not OKAY:
 			if (a == "Longitude" or a == "Latitude") and self.l_or_l == False:
@@ -235,3 +281,8 @@ class HandlePacket():
 			for fhv in self.marked_fields:
 				if fhv[1] == "Longitude" or fhv[1] == "Latitude":
 					self.marked_fields.remove(fhv)
+
+
+if __name__ == "__main__":
+	sys.stderr.write("This is a module...\n")
+	sys.exit(ERR)

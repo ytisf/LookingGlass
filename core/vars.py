@@ -27,8 +27,8 @@ config.USER_REQUESTS    = []
 
 # VERSION INFORMATION
 NAME                    = "LookingGlass"
-NUMERIC_VERSION         = 1.1
-NAME_VERSION            = "Bromhilda"
+NUMERIC_VERSION         = 1.2
+NAME_VERSION            = "Lia"
 AUTHORS                 = ["Yuval tisf Nativ", "Dagan Pasternak"]
 THIS_YEAR               = 2016
 
@@ -36,3 +36,5 @@ THIS_YEAR               = 2016
 SINGLE_COORD            = r'^(([\+\-])?\d{1,3}\.\d{2,17})$'
 COORDINATES             = r'^(([\+\-])?\d{1,3}\.\d{2,17})[\,\s](([\+\-])?\d{1,3}\.\d{2,17})$'
 EMAIL                   = r'([a-zA-Z0-9\-\.\_]+(\@| at )[a-zA-Z0-9\-\.\_]{3,16}(\.|dot| dot )[a-zA-Z0-9\-\.\_]{2,3})'
+MAC_ADDR                = r'([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})'
+IMEI_NOT_REALLY_REGEX   = r'(\d{15})'

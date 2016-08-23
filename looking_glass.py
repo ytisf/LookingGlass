@@ -183,7 +183,7 @@ def _build_html(file_name):
 				markdown_text += "<tr><td>%s</td><td align='right'>%s</td></tr>" % ("BINARY", "BINARY")
 		markdown_text += "</table>"
 
-		markdown_text += "<h3>Possible Hits</h3>"
+		markdown_text += "<h4>Possible Hits</h4>"
 		for field, pos, val in core.vars.config.PACKETS[pos_ind].marked_fields:
 			markdown_text += "<p><code>%s</code> (%s) might be %s.</p>" % (_to_presentable(field),_to_presentable(val),_to_presentable(pos))
 		markdown_text += "<hr>"

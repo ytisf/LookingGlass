@@ -89,10 +89,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 - [x] **Feature** - Enable a flag to disable 'problematic' false-positive matches such as MSISDN.
 - [x] **Improvments** - Build a requirment file.
 
+### Version 1.2 - Lia
+- [x] Handeling JSON Requests
+- [x] Handeling XML Requests
+
 ### In the Distant Future - The year 2000
 - [ ] Real cookies support
 - [ ] Reconstruction
 - [ ] Handeling responses
-- [ ] Handeling JSON Requests
-- [ ] Handeling XML Requests
 - [ ] Have some sort of API to add search options
