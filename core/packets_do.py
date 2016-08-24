@@ -23,6 +23,8 @@ def _is_base64(s):
 	:param s: string to check
 	:return: decoded data or False
 	"""
+	if type(s) is not str or unicode:
+		return False
 	s = ''.join([s.strip() for s in s.split("\n")])
 	try:
 		enc = base64.b64encode(base64.b64decode(s)).strip()
@@ -122,8 +124,17 @@ class HandlePacket():
 
 				if _is_json(temp_get):
 					# Is JSON
-					for key, value in json.loads(temp_get).iteritems():
-						self.post_parameters.append([key, value])
+					a = json.loads(temp_get)
+					if type(a) is dict:
+						for key, value in json.loads(temp_get).iteritems():
+							self.post_parameters.append([key, value])
+					elif type(a) is list:
+						try:
+							for key, value in a:
+								self.post_parameters.append([key, value])
+						except ValueError:
+							# It's more or less than 2 values so we don't know how to handle it.
+							pass
 
 				else:
 					# Not JSON
@@ -134,8 +145,13 @@ class HandlePacket():
 							key, val = i.split("=")
 							if _is_json(val):
 								self.post_parameters.append([key + "-JSON", val])
-								for k, v in json.loads(val).iteritems():
-									self.post_parameters.append(["%s:%s" %(key, k), v])
+								a = json.loads(val)
+								if type(a) is list:
+									for k, v in a:
+										self.post_parameters.append(["%s:%s" %(key, k), v])
+								elif type(a) is dict:
+									for k, v in a.iteritems():
+										self.post_parameters.append(["%s:%s" %(key, k), v])
 
 						except ValueError:
 							self.post_parameters.append(i.split("="))
@@ -202,10 +218,16 @@ class HandlePacket():
 			# Get POST Parameters
 			temp_get = urllib.unquote_plus(semi[-1])
 
-			if _is_json(temp_get):
+			if _is_json(val):
 				# Is JSON
-				for key, value in json.loads(temp_get).iteritems():
-					self.post_parameters.append([key, value])
+				self.post_parameters.append([key + "-JSON", val])
+				a = json.loads(val)
+				if type(a) is list:
+					for k, v in a:
+						self.post_parameters.append(["%s:%s" %(key, k), v])
+				elif type(a) is dict:
+					for k, v in a.iteritems():
+						self.post_parameters.append(["%s:%s" %(key, k), v])
 
 			else:
 				# Not JSON

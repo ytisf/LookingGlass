@@ -138,6 +138,8 @@ def _build_html(file_name):
 	markdown_text += "<head><link rel=\"stylesheet\" href=\"markdown.css\"><style>body {box-sizing: border-box;min-width: 200px;max-width: 980px;margin: 0 auto;padding: 45px;}</style></head>"
 	markdown_text += "<body><article class=\"markdown-body\">"
 	markdown_text += "<h1>Report - <code>%s</code></h1>" % file_name
+
+	# General summary
 	markdown_text += "<h2>Summary</h2>"
 	if file_flag:
 		markdown_text += "<p>PCAP size: <code>%s</code></p>\n" % os.path.getsize(file_name)
@@ -148,9 +150,20 @@ def _build_html(file_name):
 	markdown_text += "<p>Date of Analysis: <code>%s</code></p>\n" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	markdown_text += "<p>Total of GETs: <code>%s</code></p>\n" % gets
 	markdown_text += "<p>Total of POSTs: <code>%s</code></p>\n" % posts
+
+	# Hits summary
+	markdown_text += "<h2>Hits Summary</h2>"
+	markdown_text += "<ul>"
+	for pos_ind in poss_packets:
+		this_index = core.vars.config.PACKETS[pos_ind].index
+		for field, pos, val in core.vars.config.PACKETS[pos_ind].marked_fields:
+			markdown_text += "<li><a href=\"#packet%s\">Packet %s</a>:   <code>%s</code> - <code>%s</code> might be %s</li>" % (this_index, this_index, field, val, pos)
+	markdown_text += "</ul>"
+
+	# All possible hits - full report
 	markdown_text += "<h2>Possible Hits (%s)</h2>" % len(poss_packets)
 	for pos_ind in poss_packets:
-		markdown_text += "<h3>Packet #%s</h3>" % core.vars.config.PACKETS[pos_ind].index
+		markdown_text += "<a name=\"packet%s\"><h3>Packet #%s</h3></a>" % (core.vars.config.PACKETS[pos_ind].index, core.vars.config.PACKETS[pos_ind].index)
 		markdown_text += "<p>Host: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].host
 		markdown_text += "<p>URL: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].path
 		markdown_text += "<p>Request Type: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].request_method
@@ -164,9 +177,9 @@ def _build_html(file_name):
 			except IndexError:
 				continue
 			try:
-				markdown_text += "<tr><td>%s</td><td align='right'>%s</td></tr>" % (_to_presentable(field), _to_presentable(val))
+				markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % (_to_presentable(field), _to_presentable(val))
 			except:
-				markdown_text += "<tr><td>%s</td><td align='right'>%s</td></tr>" % ("BINARY", "BINARY")
+				markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % ("BINARY", "BINARY")
 		markdown_text += "</table>"
 
 		markdown_text += "<h4>Post Parameters</h4>"
@@ -178,9 +191,9 @@ def _build_html(file_name):
 			except IndexError:
 				continue
 			try:
-				markdown_text += "<tr><td>%s</td><td align='right'>%s</td></tr>" % (_to_presentable(field), _to_presentable(val))
+				markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % (_to_presentable(field), _to_presentable(val))
 			except:
-				markdown_text += "<tr><td>%s</td><td align='right'>%s</td></tr>" % ("BINARY", "BINARY")
+				markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % ("BINARY", "BINARY")
 		markdown_text += "</table>"
 
 		markdown_text += "<h4>Possible Hits</h4>"
@@ -441,6 +454,7 @@ def main():
 		sys.stdout.write("\033[92m[+]\033[0m\tRunning in single file mode.\n")
 		_execution_wrapper(location)
 		_create_css()
+		sys.stdout.write("\n")
 
 	elif folder_flag:
 		try:
@@ -461,6 +475,7 @@ def main():
 		for file in files:
 			sys.stdout.write("\033[92m[+]\033[0m\tExecuting file '%s'.\n" % file)
 			_execution_wrapper(file)
+		sys.stdout.write("\n")
 
 	else:
 		_print_help()
