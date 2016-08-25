@@ -1,6 +1,8 @@
 # LookingGlass
 
 ## Abstract
+LookingGlass is hosted at [Github](https://www.github.com) and is located at [https://LookingGlass.moriRT.com](https://lookingglass.morirt.com)
+
 LookingGlass is a parsing tool to assist you with your traffic research. It is designed to look (at the moment) only on HTTP requests (parameterized only!) and highlight specific information types. Currently, LookingGlass is hunting these particular data types:
   - IMEI
   - Credit Card numbers
@@ -10,12 +12,22 @@ LookingGlass is a parsing tool to assist you with your traffic research. It is d
   - Longitudes & Latitudes
   - Emails
 
-The data is searched within encodings such as `base64`, `urlencoding`, `base58` and we try to eliminate false-positives with searching if data might be data like `unix epoch time`.
+The data is searched within encodings such cas `base64`, `urlencoding`, `base58` and we try to eliminate false-positives with searching if data might be data like `unix epoch time`.
 
 It will create two artifacts after execution:
 
   1. `filename.csv` - A CSV with all requests and parameters found, parsed.
   2. `filename.html` - An HTML report only with the possible hits of patterns described above.
+
+A note for lazy - here is a 'help' with all arguments:
+```
+-f, --file           Single file mode. Path to PCAP file.
+-d, --directory      Directory to scan PCAPs in.
+-v, --verbose        Show more information while running.
+-u, --user           User configurations to search.
+-h, --help           Shows this help menu.
+--falpos             Ignore data types that are not reliable such as MSISDN.
+```
 
 *Little Comment* - Because we get to record directly on devices sometimes, and on Android the recorder does not add the IP layer, we have added support for that as well.
 
@@ -92,6 +104,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### Version 1.2 - Lia
 - [x] Handeling JSON Requests
 - [x] Handeling XML Requests
+
+### Version 1.3 - Gaia
+- [x] Fixing various bugs.
+- [x] Patching reports.
 
 ### In the Distant Future - The year 2000
 - [ ] Real cookies support
