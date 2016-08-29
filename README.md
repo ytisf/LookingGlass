@@ -23,6 +23,7 @@ A note for lazy - here is a 'help' with all arguments:
 ```
 -f, --file           Single file mode. Path to PCAP file.
 -d, --directory      Directory to scan PCAPs in.
+-l, --live           Run on a live adapter and sniff. (not recommended)
 -v, --verbose        Show more information while running.
 -u, --user           User configurations to search.
 -h, --help           Shows this help menu.
@@ -57,12 +58,26 @@ Create a file of your choosing and add the terms you want to search. For string 
 ```
 normal, SM-J700, Device Model
 ```
-The `'normal'` means text search, the `'SM-J700'` is the string to search and the `'Device Model'` is the title for that search.
+The `'normal'` means text search, the `'SM-J700'` is the string to search and the `'Device Model'` is the title for that search. Please notice that LookingGlass will attempt to search for the data in binary form as well as in different encodings such as Base64 and so on.
 
 Another type of search is a regex search. For example:
 ```
 regex, (com\.([a-zA-z]+\.){1,3}[a-zA-z]+), Android Package Name
 ```
+
+There is also binary data search:
+```
+binary, 0363646e0377, Binary User Name
+```
+
+And Hash searches:
+```
+md5hash, abc, MD5 of Name
+sha1hash, text_here, SHA1 of name
+sha256, text_here, SHA256 of name
+sha512, text_here, SHA512 of name
+```
+
 
 After you have saved the file you can call it like this:
 ```bash
@@ -94,20 +109,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### Version 1.1 - Bromhilda
 - [x] **BugFix** - Fix CSS writer, which is an idiotic idea anyway.
 - [x] **BugFix** - If encountering Longitude for the 2nd time have it change to Latitude.
-- [x] **Improvments** - Set `host` and `URI` in the report to a code tag.
-- [x] **Feature** - Add email regex.
 - [x] **BugFix** - Make argument parsing done in a manner that is not embarassing to a 3 years old.
-- [x] **Improvments** - Change verbosity option when exeuting on multiple files.
+- [x] **Feature** - Add email regex.
 - [x] **Feature** - Enable a flag to disable 'problematic' false-positive matches such as MSISDN.
+- [x] **Improvments** - Set `host` and `URI` in the report to a code tag.
 - [x] **Improvments** - Build a requirment file.
+- [x] **Improvments** - Change verbosity option when exeuting on multiple files.
 
 ### Version 1.2 - Lia
-- [x] Handeling JSON Requests
-- [x] Handeling XML Requests
+- [x] **Feature** - Handeling JSON Requests
+- [x] **Feature** - Handeling XML Requests
 
 ### Version 1.3 - Gaia
-- [x] Fixing various bugs.
-- [x] Patching reports.
+- [x] **BugFix** - Fixing various bugs.
+- [x] **BugFix** - Patching reports.
+
+### Version 1.4 - Benzaiten
+- [x] **Feature** - Binary search.
+- [x] **Feature** - Add support for user based binary search.
+- [x] **Improvments** - Normal log file.
+- [x] **Improvments** - Preparation for different protocols.
+
+### Version 1.5 - No-Name-Yet
+- [ ] **Feature** - Ability to sniff live traffic.
+- [ ] **Feature** - Search for field names (for example, passwords)
+- [ ] **Improvments** - Export coordinations as KML.
 
 ### In the Distant Future - The year 2000
 - [ ] Real cookies support

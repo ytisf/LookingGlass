@@ -1,6 +1,8 @@
 
 import re
 import sys
+import base64
+import base58
 import datetime
 
 import core.vars
@@ -101,6 +103,67 @@ def _is_regex_matching(string, regex):
 		return True
 	except:
 		return False
+
+def _build_search_dict(search_term):
+	"""
+	Builds a dictionary of search terms the item might
+	appear in the data content.
+	:param search_term: The string of the search
+	:return: dict of search terms
+	"""
+	retMe = {}
+	retMe['plain'] = search_term
+	retMe['base64'] = base64.b64encode(search_term)
+	retMe['base58'] = base58.b58encode(search_term)
+	return retMe
+
+
+def binary_search(index, string):
+	"""
+	Search for data in a binary string.
+	:param index: The index number in the packet.
+	:param string: The binary data to search in.
+	:return: List of 2 elements
+	"""
+	# Todo: Also need to add support for different types of encodings.
+	try:
+		string = str(string)
+	except:
+		return OKAY
+
+	# Handle user-based rules:
+	if core.vars.config.USER_REQUESTS is not []:
+		for t, search, name in core.vars.config.USER_REQUESTS:
+			if t == "normal":
+				search_dict = _build_search_dict(search)
+				for name_i, search_term in search_dict.iteritems():
+					if search_term in string:
+						return {	"type": name_i,
+									"name": name,
+									"match": string.find(search_term)
+								}
+
+			elif t == "regex":
+				if _is_regex_matching(string, search):
+					a = re.search(search, string)
+					return {	"type": "regex",
+								"name": name,
+								"match": a.group(1)}
+
+			elif t == "binary":
+				if search in string:
+					return {	"type": "binary-user",
+								"name": name,
+								"match": string.find(search_term)}
+
+			elif t == ("md5sum" or "sha1sum" or "sha256" or "sha512"):
+				if search in string:
+					return {	"type": name,
+								"name": name,
+								"match": string.find(search_term)}
+
+	# In case nothing is found
+	return OKAY
 
 
 def whoami(index, string):

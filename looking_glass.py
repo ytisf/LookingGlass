@@ -29,6 +29,9 @@ except ImportError, e:
 	sys.stderr.write("\033[91m[!]\033[0m\tUnable to import Scapy.\n")
 	sys.exit(ERR)
 
+### HERE ENDS IMPORTS SECTIONS
+
+
 
 def md5(fname):
 	"""
@@ -86,13 +89,14 @@ def _save(file_name):
 	report_file_name = report_file_name[:-5]
 	f = open(REPORT_FOLER+report_file_name+".csv", WRITE_BINARY)
 	for packt in core.vars.config.PACKETS:
-		line = str(packt.index) + SEPARATOR + packt.request_method + SEPARATOR
-		line += packt.host + SEPARATOR + packt.path + SEPARATOR
-		if packt.request_method == "GET":
-			line += str(packt.get_parameters) + "\n"
-		elif packt.request_method == "POST":
-			line += str(packt.get_parameters) + SEPARATOR + str(packt.post_parameters) + "\n"
-		f.write(line)
+		if packt.binary_flag is False:
+			line = str(packt.index) + SEPARATOR + packt.request_method + SEPARATOR
+			line += packt.host + SEPARATOR + packt.path + SEPARATOR
+			if packt.request_method == "GET":
+				line += str(packt.get_parameters) + "\n"
+			elif packt.request_method == "POST":
+				line += str(packt.get_parameters) + SEPARATOR + str(packt.post_parameters) + "\n"
+			f.write(line)
 	f.close()
 
 
@@ -124,14 +128,17 @@ def _build_html(file_name):
 	poss_packets = []
 	gets = 0
 	posts = 0
+	binary_counter = 0
 	counter = 0
 	for pckt in core.vars.config.PACKETS:
-		if len(pckt.marked_fields) > 0:
+		if (len(pckt.marked_fields) > 0) or (len(pckt.binary_data) > 0):
 			poss_packets.append(counter)
 		if pckt.request_method is "GET":
 			gets += 1
 		if pckt.request_method is "POST":
 			posts += 1
+		if pckt.request_method is "BINARY":
+			binary_counter += 1
 		counter += 1
 
 	markdown_text += "<html>"
@@ -158,48 +165,69 @@ def _build_html(file_name):
 		this_index = core.vars.config.PACKETS[pos_ind].index
 		for field, pos, val in core.vars.config.PACKETS[pos_ind].marked_fields:
 			markdown_text += "<li><a href=\"#packet%s\">Packet %s</a>:   <code>%s</code> - <code>%s</code> might be %s</li>" % (this_index, this_index, field, val, pos)
+		for name, pos, val in core.vars.config.PACKETS[pos_ind].binary_data:
+			if type(val) is int:
+				markdown_text += "<li><a href=\"#packet%s\">Packet %s[BIN]</a>:   Found possible hit on <code>%s</code> at offset %s</li>" % (this_index, this_index, pos, val)
+			else:
+				markdown_text += "<li><a href=\"#packet%s\">Packet %s[BIN]</a>:   <code>%s</code> %s - might be %s</li>" % (this_index, this_index, val, name, pos)
 	markdown_text += "</ul>"
 
 	# All possible hits - full report
 	markdown_text += "<h2>Possible Hits (%s)</h2>" % len(poss_packets)
 	for pos_ind in poss_packets:
-		markdown_text += "<a name=\"packet%s\"><h3>Packet #%s</h3></a>" % (core.vars.config.PACKETS[pos_ind].index, core.vars.config.PACKETS[pos_ind].index)
-		markdown_text += "<p>Host: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].host
-		markdown_text += "<p>URL: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].path
-		markdown_text += "<p>Request Type: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].request_method
 
-		markdown_text += "<h4>Get Parameters</h4>"
-		markdown_text += "<table><tr><th>Field</th><th>Value</th></tr>"
-		for fv in core.vars.config.PACKETS[pos_ind].get_parameters:
-			try:
-				field = fv[0]
-				val = fv[1]
-			except IndexError:
-				continue
-			try:
-				markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % (_to_presentable(field), _to_presentable(val))
-			except:
-				markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % ("BINARY", "BINARY")
-		markdown_text += "</table>"
+		# If binary
+		if core.vars.config.PACKETS[pos_ind].binary_flag == True:
+			markdown_text += "<a name=\"packet%s\"><h3>Packet #%s</h3></a>" % (core.vars.config.PACKETS[pos_ind].index, core.vars.config.PACKETS[pos_ind].index)
+			markdown_text += "<p>Host: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].host
+			markdown_text += "<p>Request Type: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].request_method
 
-		markdown_text += "<h4>Post Parameters</h4>"
-		markdown_text += "<table><tr><th>Field</th><th>Value</th></tr>"
-		for fv in core.vars.config.PACKETS[pos_ind].post_parameters:
-			try:
-				field = fv[0]
-				val = fv[1]
-			except IndexError:
-				continue
-			try:
-				markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % (_to_presentable(field), _to_presentable(val))
-			except:
-				markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % ("BINARY", "BINARY")
-		markdown_text += "</table>"
+			markdown_text += "<h4>Possible Hits</h4>"
+			for name, pos, val in core.vars.config.PACKETS[pos_ind].binary_data:
+				markdown_text += "<p><code>%s:%s</code> at offset %s.</p>" % (_to_presentable(str(val)), _to_presentable(name) ,_to_presentable(str(pos)))
+			markdown_text += "<hr>"
 
-		markdown_text += "<h4>Possible Hits</h4>"
-		for field, pos, val in core.vars.config.PACKETS[pos_ind].marked_fields:
-			markdown_text += "<p><code>%s</code> (%s) might be %s.</p>" % (_to_presentable(field),_to_presentable(val),_to_presentable(pos))
-		markdown_text += "<hr>"
+		# If HTTP Request
+		else:
+			markdown_text += "<a name=\"packet%s\"><h3>Packet #%s</h3></a>" % (core.vars.config.PACKETS[pos_ind].index, core.vars.config.PACKETS[pos_ind].index)
+			markdown_text += "<p>Host: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].host
+			markdown_text += "<p>URL: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].path
+			markdown_text += "<p>Request Type: <code>%s</code>.</p>" % core.vars.config.PACKETS[pos_ind].request_method
+
+			if len(core.vars.config.PACKETS[pos_ind].get_parameters) != 0:
+				markdown_text += "<h4>Get Parameters</h4>"
+				markdown_text += "<table><tr><th>Field</th><th>Value</th></tr>"
+				for fv in core.vars.config.PACKETS[pos_ind].get_parameters:
+					try:
+						field = fv[0]
+						val = fv[1]
+					except IndexError:
+						continue
+					try:
+						markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % (_to_presentable(field), _to_presentable(val))
+					except:
+						markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % ("BINARY", "BINARY")
+				markdown_text += "</table>"
+
+			if len(core.vars.config.PACKETS[pos_ind].post_parameters) != 0:
+				markdown_text += "<h4>Post Parameters</h4>"
+				markdown_text += "<table><tr><th>Field</th><th>Value</th></tr>"
+				for fv in core.vars.config.PACKETS[pos_ind].post_parameters:
+					try:
+						field = fv[0]
+						val = fv[1]
+					except IndexError:
+						continue
+					try:
+						markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % (_to_presentable(field), _to_presentable(val))
+					except:
+						markdown_text += "<tr><td>%s</td><td align='left'>%s</td></tr>" % ("BINARY", "BINARY")
+				markdown_text += "</table>"
+
+			markdown_text += "<h4>Possible Hits</h4>"
+			for field, pos, val in core.vars.config.PACKETS[pos_ind].marked_fields:
+				markdown_text += "<p><code>%s</code> (%s) might be %s.</p>" % (_to_presentable(field),_to_presentable(val),_to_presentable(pos))
+			markdown_text += "<hr>"
 
 	markdown_text += "</article>"
 	markdown_text += "</body>"
@@ -250,6 +278,7 @@ def _print_help():
 	These are the possible arguments:
 		\033[36m-f, --file           Single file mode. Path to PCAP file.
 		-d, --directory      Directory to scan PCAPs in.
+		-l, --live           Run in live sniffing on adapter. For example 'eth0' or 'en0'. (not recommended)
 		-v, --verbose        Show more information while running.
 		-u, --user           User configurations to search.
 		-h, --help           Shows this help menu.
@@ -328,6 +357,38 @@ def _execution_wrapper(file_name):
 	sys.stdout.write("\033[92m[+]\033[0m\tFinished with '%s'.\n" % file_name)
 
 
+def _live_execution_wrapper(adapter):
+
+	global verbosity
+	global false_positives
+	jobs = []
+	i = 0
+
+	def _create_thread_for_packet(pckt):
+		global i
+		print i
+		th = Thread(target=_do_packet, args=(pckt, i))
+		th.daemon = True
+		th.start()
+		jobs.append(th)
+		i += 1
+
+	try:
+		sys.stdout.write("\033[92m[+]\033[0m\tNow sniffing on '%s'.\n" % adapter)
+		sniff(iface=adapter, prn=_create_thread_for_packet, filter="ip")
+	except:
+		sys.stderr.write("\033[91m[!]\033[0m\tCould not sniff traffic on adapter '%s'.\n" % adapter)
+		return ERR
+
+	sys.stdout.write("\n\033[92m[+]\033[0m\tGot quit. Generating report.\n")
+	for j in jobs:
+		j.join()
+	_save("LiveCapture.pcap")
+	_build_html("LiveCapture.pcap")
+	sys.stdout.write("\033[92m[+]\033[0m\tFinished with LiveCapture.\n")
+	return OKAY
+
+
 def _read_user_search_file(path_to_conf):
 
 	global verbosity
@@ -336,39 +397,62 @@ def _read_user_search_file(path_to_conf):
 
 	try:
 		f = open(path_to_conf, READ)
-		raw_conf = f.read()
+		raw_conf = f.readlines()
 		f.close()
 	except IOError, e:
 		sys.stdout.write("\033[91m[!]\033[0m\tCould read configuration file '%s'.\nError:%s.\n" % (path_to_conf, e))
 		sys.exit(ERR)
 
 	i = 0
-	for line in raw_conf.split("\n"):
-		if len(line) == 0:
-			continue
-		try:
-			t, search_term, name = line.split(", ")
-		except:
-			sys.stdout.write("\033[91m[-]\033[0m\tError parsing line %s in the configuration file. Skipping.\n" % i)
-			i += 1
-			continue
 
-		if t == "normal":
-			rules.append([t, search_term, name])
-		elif t == "regex":
+	if len(raw_conf) == 0:
+		sys.stderr.write("\033[91m[-]\033[0m\tThere are no lines on the user-configuartion file.\n")
+		sys.exit(ERR)
+
+	else:
+
+		for line in raw_conf:
 			try:
-				reg = re.compile(search_term)
-				rules.append([t, reg, name])
+				t, search_term, name = line.split(", ")
 			except:
-				sys.stdout.write("\033[91m[-]\033[0m\tThe term '%s' is not a valid regex.\n" % search_term)
-				i += 1
+				sys.stderr.write("\033[91m[-]\033[0m\tError parsing line %s in the configuration file. Skipping.\n" % i)
 				continue
-		else:
-			sys.stdout.write("\033[91m[-]\033[0m\tFirst delimiter must be 'regex' or 'normal', not '%s'.\n" % t)
-			i += 1
-			continue
 
-		i += 1
+			if t == "normal":
+				rules.append([t, search_term, name])
+
+			elif t == "regex":
+				try:
+					reg = re.compile(search_term)
+					rules.append([t, reg, name])
+				except:
+					sys.stderr.write("\033[91m[-]\033[0m\tThe term '%s' is not a valid regex.\n" % search_term)
+					continue
+
+			elif t == "binary":
+				try:
+					rules.append([t, bytes(bytearray.fromhex(search_term)), name])
+				except ValueError:
+					sys.stderr.write("\033[91m[-]\033[0m\tError while converting binary search in name '%s'. Probably odd chars.\n" % name.strip())
+					continue
+
+			elif t == "md5hash":
+				rules.append([t, hashlib.md5(search_term).hexdigest(), name])
+
+			elif t == "sha1hash":
+				rules.append([t, hashlib.sha1(search_term).hexdigest(), name])
+
+			elif t == "sha256":
+				rules.append([t, hashlib.sha256(search_term).hexdigest(), name])
+
+			elif t == "sha512":
+				rules.append([t, hashlib.sha512(search_term).hexdigest(), name])
+
+			else:
+				sys.stdout.write("\033[91m[-]\033[0m\tFirst delimiter must be 'regex' or 'normal', not '%s'.\n" % t)
+				continue
+
+			i += 1
 
 	if verbosity:
 		sys.stdout.write("\033[92m[+]\033[0m\tParsed %s user-based rules.\n" % len(rules))
@@ -399,6 +483,7 @@ def main():
 	folder_flag = False
 	help_flag = False
 	verbosity = False
+	live_capture = False
 	user_requests = False
 	location = ""
 	rules_location = ""
@@ -407,7 +492,7 @@ def main():
 									# on, ignore those fields.
 
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hf:d:u:v", ["file=", "directory=", "user=", "verbose", "falpos"])
+		opts, args = getopt.getopt(sys.argv[1:], "hf:d:l:u:v", ["file=", "directory=", "user=", "live=", "verbose", "falpos"])
 	except getopt.GetoptError:
 		_print_help()
 
@@ -423,8 +508,10 @@ def main():
 		elif opt in ("-v", "--verbose"):
 			verbosity = True
 			VERBOSITY = True
+		elif opt in ("-l", "--live"):
+			live_capture = True
+			adapter = arg
 		elif opt in ("-u", "--user"):
-			core.vars.config.USER_REQUESTS = _read_user_search_file(arg)
 			user_requests = True
 			rules_location = arg
 		elif opt == "--falpos":
@@ -432,9 +519,8 @@ def main():
 			FALSE_POSITIVES = True
 
 	# Checks if got one or the other
-	if file_flag is False and folder_flag is False:
+	if file_flag is False and folder_flag is False and live_capture is False:
 		_print_help()
-
 
 	# Print banner & execution mode
 	_print_banner()
@@ -446,8 +532,8 @@ def main():
 		sys.stdout.write("\033[92m[+]\033[0m\tDisabling false-positive prone searches.\n")
 
 	if user_requests:
+		core.vars.config.USER_REQUESTS = _read_user_search_file(rules_location)
 		sys.stdout.write("\033[92m[+]\033[0m\tUsing %s rules from file '%s'.\n" % (len(core.vars.config.USER_REQUESTS), rules_location))
-
 
 	# If everything went okay the program will not attempt to start
 	if file_flag:
@@ -476,6 +562,11 @@ def main():
 			sys.stdout.write("\033[92m[+]\033[0m\tExecuting file '%s'.\n" % file)
 			_execution_wrapper(file)
 		sys.stdout.write("\n")
+
+	elif live_capture:
+		_live_execution_wrapper(adapter)
+		_create_css()
+
 
 	else:
 		_print_help()

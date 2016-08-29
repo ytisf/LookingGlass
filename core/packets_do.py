@@ -36,6 +36,11 @@ def _is_base64(s):
 
 
 def _is_json(myjson):
+	"""
+	Tests to see if the data is JSON format
+	:param myjson: String which might be JSON
+	:return: Boolean
+	"""
 	if "{" in myjson and "}" in myjson:
 		pass
 	else:
@@ -53,26 +58,102 @@ class HandlePacket():
 	Currently only works on HTTP Requests.
 	"""
 	def __init__(self, index, packet):
-		self.index = index
-		self.raw_packet = packet
-		self.request_method = None
-		self.time = None
-		self.host = None
-		self.path = None
-		self.content_type = None
-		self.payload = None
-		self.get_parameters = []
-		self.post_parameters = []
-		self.marked_fields = []
+		self.index = index				# Index of packet within PCAP
+		self.raw_packet = packet		# The Actual packet
+		self.time = None				# Time stamp of the packet
+		self.host = None				# Host name the packet it sent to
+		self.path = None				# Full URI (if available)
+		self.payload = None				# Actual content of request
+		self.binary_data = [] 			# Actual binary data
+		self.binary_flag = False		# Binary flag is set if the data is not
+										# an HTTP request
+		self.content_type = None		# The type of the content
+		self.request_method = None		# The request method
+		self.marked_fields = []			# Fields which might match
+		self.get_parameters = []		# A list of GET parameters
+		self.post_parameters = []		# A list of POST Parameters
 
-		self._isHTTPRequest()
+		self._isHTTPRequest()			# Check if this is an HTTP request
+
+		# If the packet is an HTTP request, do the self._CheckFields on it
 		if self.request_method == "GET" or self.request_method == "POST":
-			self._CheckFields()
+			self._CheckFields()			# Validate fields.
+
+		# If it is not, try the binary search for the given data types
+		else:
+			self.binary_flag = True
+			self._SearchBinaryData()
+
+
+	def _AnalyzeGetLine(self, line):
+		"""
+		Analyze the GET request line and split it to parameters
+		:param line: The string of the line.
+		:return: Boolean
+		"""
+
+		# Check if there is a "?" in the path.
+		# If not it's probably not parametized.
+		if line.find("?") == -1:
+			return False
+
+		params = line[line.find("?") + 1:]
+		params = params.split("&")
+		ret_gets = []
+		for i in params:
+			self.get_parameters.append(i.split("="))
+
+		return True
+
+
+	def _AnalyzePostBody(self, body):
+		"""
+		Analyze the POST request line and split it to parameters
+		:param body: The string body of the POST request.
+		:return: Boolean
+		"""
+
+		# First, check if the entire content is JSON:
+		if _is_json(temp_get):
+			# Is JSON
+			a = json.loads(temp_get)
+			if type(a) is dict:
+				for key, value in json.loads(temp_get).iteritems():
+					self.post_parameters.append([key, value])
+			elif type(a) is list:
+				try:
+					for key, value in a:
+						self.post_parameters.append([key, value])
+				except ValueError:
+					# It's more or less than 2 values so we don't know how to handle it.
+					pass
+
+		# If not JSON, try splitting and check if JSON
+		else:
+			params = temp_get[temp_get.find("?") + 1:]
+			params = params.split("&")
+			for i in params:
+				try:
+					key, val = i.split("=")
+					if _is_json(val):
+						self.post_parameters.append([key + "-JSON", val])
+						a = json.loads(val)
+						if type(a) is list:
+							for k, v in a:
+								self.post_parameters.append(["%s:%s" %(key, k), v])
+						elif type(a) is dict:
+							for k, v in a.iteritems():
+								self.post_parameters.append(["%s:%s" %(key, k), v])
+
+				except ValueError:
+					self.post_parameters.append(i.split("="))
+		return True
+
 
 	def _isHTTPRequest(self):
 		"""
 		If the packet is an HTTPRequest, try to extract the fields in them.
-		:return:
+		:return: Null
 		"""
 
 		if self.raw_packet.haslayer(http.HTTPRequest):
@@ -80,20 +161,14 @@ class HandlePacket():
 			if self.raw_packet[http.HTTPRequest].getfieldval('Method') == "GET":
 
 				if "?" in self.raw_packet[http.HTTPRequest].getfieldval('Path'):
-					# Parameterized GET
+					# Get Header Details
 					self.request_method = "GET"
 					self.host = self.raw_packet[http.HTTPRequest].getfieldval('Host')
 					self.path = self.raw_packet[http.HTTPRequest].getfieldval('Path')
 					self.time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self.raw_packet.time))
 
 					temp_get = urllib.unquote_plus(self.raw_packet[http.HTTPRequest].getfieldval('Path'))
-					if temp_get.find("?") == -1:
-						return
-					params = temp_get[temp_get.find("?") + 1:]
-					params = params.split("&")
-					ret_gets = []
-					for i in params:
-						self.get_parameters.append(i.split("="))
+					self._AnalyzeGetLine(temp_get)
 
 					core.vars.config.PACKETS.append(self)
 
@@ -102,6 +177,8 @@ class HandlePacket():
 					pass
 
 			elif self.raw_packet[http.HTTPRequest].getfieldval('Method') == "POST":
+
+				# Get Header Details
 				self.request_method = "POST"
 				self.time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(self.raw_packet.time))
 				self.host = self.raw_packet[http.HTTPRequest].getfieldval('Host')
@@ -111,50 +188,14 @@ class HandlePacket():
 				self.payload = self.raw_packet[http.HTTPRequest].payload
 
 				# Get GET Parameters
-				temp_get = str(self.raw_packet[http.HTTPRequest].getfieldval('Path'))
-				temp_get = urllib.unquote_plus(temp_get)
-				params = temp_get[temp_get.find("?") + 1:]
-				params = params.split("&")
-				for i in params:
-					self.get_parameters.append(i.split("="))
+				temp_get = urllib.unquote_plus(str(self.raw_packet[http.HTTPRequest].getfieldval('Path')))
+				self._AnalyzeGetLine(temp_get)
 
 				# Get POST Parameters
 				temp_get = str(self.raw_packet[http.HTTPRequest].payload)
 				temp_get = urllib.unquote_plus(temp_get)
 
-				if _is_json(temp_get):
-					# Is JSON
-					a = json.loads(temp_get)
-					if type(a) is dict:
-						for key, value in json.loads(temp_get).iteritems():
-							self.post_parameters.append([key, value])
-					elif type(a) is list:
-						try:
-							for key, value in a:
-								self.post_parameters.append([key, value])
-						except ValueError:
-							# It's more or less than 2 values so we don't know how to handle it.
-							pass
-
-				else:
-					# Not JSON
-					params = temp_get[temp_get.find("?") + 1:]
-					params = params.split("&")
-					for i in params:
-						try:
-							key, val = i.split("=")
-							if _is_json(val):
-								self.post_parameters.append([key + "-JSON", val])
-								a = json.loads(val)
-								if type(a) is list:
-									for k, v in a:
-										self.post_parameters.append(["%s:%s" %(key, k), v])
-								elif type(a) is dict:
-									for k, v in a.iteritems():
-										self.post_parameters.append(["%s:%s" %(key, k), v])
-
-						except ValueError:
-							self.post_parameters.append(i.split("="))
+				self._AnalyzePostBody(temp_get)
 
 				core.vars.config.PACKETS.append(self)
 
@@ -179,13 +220,8 @@ class HandlePacket():
 						pass
 
 			temp_get = urllib.unquote_plus(self.path)
-			if temp_get.find("?") == -1:
-				return
-			params = temp_get[temp_get.find("?") + 1:]
-			params = params.split("&")
-			ret_gets = []
-			for i in params:
-				self.get_parameters.append(i.split("="))
+			_AnalyzeGetLine(temp_get)
+
 			core.vars.config.PACKETS.append(self)
 
 		elif "POST " in str(self.raw_packet.original) and "Host: " in str(self.raw_packet.original) and "HTTP/1. " in str(self.raw_packet.original):
@@ -196,8 +232,7 @@ class HandlePacket():
 			for item in semi:
 				if ("GET " or "POST ") in item:
 					self.request_method = item[:item.find(" ")]
-					self.path = urllib.unquote_plus(
-						item[item.find(self.request_method) + len(self.request_method):item.find(" HTTP/1.")])
+					self.path = urllib.unquote_plus(item[item.find(self.request_method) + len(self.request_method):item.find(" HTTP/1.")])
 				else:
 					try:
 						key, value = item.split(": ")
@@ -206,53 +241,40 @@ class HandlePacket():
 					except:
 						pass
 
+			# GET Parameters
 			temp_get = urllib.unquote_plus(self.path)
-			if temp_get.find("?") == -1:
-				return
-			params = temp_get[temp_get.find("?") + 1:]
-			params = params.split("&")
-			ret_gets = []
-			for i in params:
-				self.get_parameters.append(i.split("="))
+			self._AnalyzeGetLine(temp_get)
 
 			# Get POST Parameters
 			temp_get = urllib.unquote_plus(semi[-1])
-
-			if _is_json(val):
-				# Is JSON
-				self.post_parameters.append([key + "-JSON", val])
-				a = json.loads(val)
-				if type(a) is list:
-					for k, v in a:
-						self.post_parameters.append(["%s:%s" %(key, k), v])
-				elif type(a) is dict:
-					for k, v in a.iteritems():
-						self.post_parameters.append(["%s:%s" %(key, k), v])
-
-			else:
-				# Not JSON
-				params = temp_get[temp_get.find("?") + 1:]
-				params = params.split("&")
-				for i in params:
-					try:
-						key, val = i.split("=")
-						if _is_json(val):
-							self.post_parameters.append([key, "-JSON", val])
-							for k, v in json.loads(val).iteritems():
-								self.post_parameters.append(["%s:%s" %(key, k), v])
-
-					except ValueError:
-						self.post_parameters.append(i.split("="))
+			self._AnalyzePostBody(temp_get)
 
 			core.vars.config.PACKETS.append(self)
 
 		else:
-			# No TCP?
+			# This is not a "GET" or "POST" request
 			pass
 
+
+	def _SearchBinaryData(self):
+		"""
+		Search for data within binary data.
+		:return: Null
+		"""
+		a = binary_search(self.index, str(self.raw_packet))
+		if a is not OKAY:
+			self.binary_data.append([a['type'], a['name'], a['match']])
+
+		if len(self.binary_data) is not 0:
+			self.request_method = "BINARY"
+			self.host = self.raw_packet[IP].src + "-->" + self.raw_packet[IP].dst
+			core.vars.config.PACKETS.append(self)
+
+
 	def _detect_param(self, field, val):
-		isb64 = _is_base64(val)  # Check if the data is base64 encoded
-		# Check if the data is binary. If not, replace the regexes to run on the decoded data.
+		isb64 = _is_base64(val)  	# Check if the data is base64 encoded
+									# Check if the data is binary. If not, replace the regexes to run on the decoded data.
+
 		if type(isb64) is str:
 			val = isb64
 

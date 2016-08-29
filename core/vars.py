@@ -27,8 +27,8 @@ config.USER_REQUESTS    = []
 
 # VERSION INFORMATION
 NAME                    = "LookingGlass"
-NUMERIC_VERSION         = 1.3
-NAME_VERSION            = "Gaia"
+NUMERIC_VERSION         = 1.4
+NAME_VERSION            = "Benzaiten"
 AUTHORS                 = ["Yuval tisf Nativ", "Dagan Pasternak"]
 THIS_YEAR               = 2016
 
