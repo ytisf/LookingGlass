@@ -127,11 +127,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ### Version 1.4 - Benzaiten
 - [x] **Feature** - Binary search.
 - [x] **Feature** - Add support for user based binary search.
+- [x] **Feature** - Ability to sniff live traffic.
 - [x] **Improvments** - Normal log file.
 - [x] **Improvments** - Preparation for different protocols.
 
 ### Version 1.5 - No-Name-Yet
-- [ ] **Feature** - Ability to sniff live traffic.
 - [ ] **Feature** - Search for field names (for example, passwords)
 - [ ] **Improvments** - Export coordinations as KML.
 
