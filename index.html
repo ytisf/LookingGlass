@@ -4,45 +4,39 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>LookingGlass by ytisf</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-dark.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/ytisf/LookingGlass">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/ytisf/LookingGlass/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/ytisf/LookingGlass/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
-
     <div class="wrapper">
+      <header>
+        <h1 class="header">LookingGlass</h1>
+        <p class="header">Customizable PCAP parser and your research assistant</p>
 
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/ytisf/LookingGlass/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/ytisf/LookingGlass/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/ytisf/LookingGlass">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/ytisf">ytisf</a></p>
+
+
+      </header>
       <section>
-        <div id="title">
-          <h1>LookingGlass</h1>
-          <p>Customizable PCAP parser and your research assistant</p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/ytisf">ytisf</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
-
         <h1>
 <a id="lookingglass" class="anchor" href="#lookingglass" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LookingGlass</h1>
 
 <h2>
 <a id="abstract" class="anchor" href="#abstract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Abstract</h2>
+
+<p>LookingGlass is hosted at <a href="https://www.github.com">Github</a> and is located at <a href="https://lookingglass.morirt.com">https://LookingGlass.moriRT.com</a></p>
 
 <p>LookingGlass is a parsing tool to assist you with your traffic research. It is designed to look (at the moment) only on HTTP requests (parameterized only!) and highlight specific information types. Currently, LookingGlass is hunting these particular data types:</p>
 
@@ -56,7 +50,7 @@
 <li>Emails</li>
 </ul>
 
-<p>The data is searched within encodings such as <code>base64</code>, <code>urlencoding</code>, <code>base58</code> and we try to eliminate false-positives with searching if data might be data like <code>unix epoch time</code>.</p>
+<p>The data is searched within encodings such cas <code>base64</code>, <code>urlencoding</code>, <code>base58</code> and we try to eliminate false-positives with searching if data might be data like <code>unix epoch time</code>.</p>
 
 <p>It will create two artifacts after execution:</p>
 
@@ -66,6 +60,17 @@
 <li>
 <code>filename.html</code> - An HTML report only with the possible hits of patterns described above.</li>
 </ol>
+
+<p>A note for lazy - here is a 'help' with all arguments:</p>
+
+<pre><code>-f, --file           Single file mode. Path to PCAP file.
+-d, --directory      Directory to scan PCAPs in.
+-l, --live           Run on a live adapter and sniff. (not recommended)
+-v, --verbose        Show more information while running.
+-u, --user           User configurations to search.
+-h, --help           Shows this help menu.
+--falpos             Ignore data types that are not reliable such as MSISDN.
+</code></pre>
 
 <p><em>Little Comment</em> - Because we get to record directly on devices sometimes, and on Android the recorder does not add the IP layer, we have added support for that as well.</p>
 
@@ -103,11 +108,24 @@
 <pre><code>normal, SM-J700, Device Model
 </code></pre>
 
-<p>The <code>'normal'</code> means text search, the <code>'SM-J700'</code> is the string to search and the <code>'Device Model'</code> is the title for that search.</p>
+<p>The <code>'normal'</code> means text search, the <code>'SM-J700'</code> is the string to search and the <code>'Device Model'</code> is the title for that search. Please notice that LookingGlass will attempt to search for the data in binary form as well as in different encodings such as Base64 and so on.</p>
 
 <p>Another type of search is a regex search. For example:</p>
 
 <pre><code>regex, (com\.([a-zA-z]+\.){1,3}[a-zA-z]+), Android Package Name
+</code></pre>
+
+<p>There is also binary data search:</p>
+
+<pre><code>binary, 0363646e0377, Binary User Name
+</code></pre>
+
+<p>And Hash searches:</p>
+
+<pre><code>md5hash, abc, MD5 of Name
+sha1hash, text_here, SHA1 of name
+sha256, text_here, SHA256 of name
+sha512, text_here, SHA512 of name
 </code></pre>
 
 <p>After you have saved the file you can call it like this:</p>
@@ -148,12 +166,47 @@ along with this program.  If not, see <a href="http://www.gnu.org/licenses/">htt
 <ul>
 <li>[x] <strong>BugFix</strong> - Fix CSS writer, which is an idiotic idea anyway.</li>
 <li>[x] <strong>BugFix</strong> - If encountering Longitude for the 2nd time have it change to Latitude.</li>
-<li>[x] <strong>Improvments</strong> - Set <code>host</code> and <code>URI</code> in the report to a code tag.</li>
-<li>[x] <strong>Feature</strong> - Add email regex.</li>
 <li>[x] <strong>BugFix</strong> - Make argument parsing done in a manner that is not embarassing to a 3 years old.</li>
-<li>[x] <strong>Improvments</strong> - Change verbosity option when exeuting on multiple files.</li>
+<li>[x] <strong>Feature</strong> - Add email regex.</li>
 <li>[x] <strong>Feature</strong> - Enable a flag to disable 'problematic' false-positive matches such as MSISDN.</li>
+<li>[x] <strong>Improvments</strong> - Set <code>host</code> and <code>URI</code> in the report to a code tag.</li>
 <li>[x] <strong>Improvments</strong> - Build a requirment file.</li>
+<li>[x] <strong>Improvments</strong> - Change verbosity option when exeuting on multiple files.</li>
+</ul>
+
+<h3>
+<a id="version-12---lia" class="anchor" href="#version-12---lia" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.2 - Lia</h3>
+
+<ul>
+<li>[x] <strong>Feature</strong> - Handeling JSON Requests</li>
+<li>[x] <strong>Feature</strong> - Handeling XML Requests</li>
+</ul>
+
+<h3>
+<a id="version-13---gaia" class="anchor" href="#version-13---gaia" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.3 - Gaia</h3>
+
+<ul>
+<li>[x] <strong>BugFix</strong> - Fixing various bugs.</li>
+<li>[x] <strong>BugFix</strong> - Patching reports.</li>
+</ul>
+
+<h3>
+<a id="version-14---benzaiten" class="anchor" href="#version-14---benzaiten" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.4 - Benzaiten</h3>
+
+<ul>
+<li>[x] <strong>Feature</strong> - Binary search.</li>
+<li>[x] <strong>Feature</strong> - Add support for user based binary search.</li>
+<li>[x] <strong>Feature</strong> - Ability to sniff live traffic.</li>
+<li>[x] <strong>Improvments</strong> - Normal log file.</li>
+<li>[x] <strong>Improvments</strong> - Preparation for different protocols.</li>
+</ul>
+
+<h3>
+<a id="version-15---no-name-yet" class="anchor" href="#version-15---no-name-yet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.5 - No-Name-Yet</h3>
+
+<ul>
+<li>[ ] <strong>Feature</strong> - Search for field names (for example, passwords)</li>
+<li>[ ] <strong>Improvments</strong> - Export coordinations as KML.</li>
 </ul>
 
 <h3>
@@ -163,14 +216,14 @@ along with this program.  If not, see <a href="http://www.gnu.org/licenses/">htt
 <li>[ ] Real cookies support</li>
 <li>[ ] Reconstruction</li>
 <li>[ ] Handeling responses</li>
-<li>[ ] Handeling JSON Requests</li>
-<li>[ ] Handeling XML Requests</li>
 <li>[ ] Have some sort of API to add search options</li>
 </ul>
       </section>
-
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+		
   </body>
 </html>
