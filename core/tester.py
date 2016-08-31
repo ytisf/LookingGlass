@@ -224,6 +224,9 @@ def whoami(index, string):
 	if _is_regex_matching(string, EMAIL):
 		return "Email"
 
+	if _is_regex_matching(string, IP_ADDR):
+		return "IP Address"
+
 
 	# Handle user-based rules:
 	if core.vars.config.USER_REQUESTS is not []:

@@ -2,6 +2,7 @@
 import config
 from core.css import css
 
+
 # GLOBALS
 OKAY                    = 0
 ERR                     = -1
@@ -19,18 +20,21 @@ READ_BINARY             = 'rb'
 WRITE_BINARY            = 'wb'
 WRITE                   = 'w'
 
+
 # SHARED
 config.PACKETS          = []
 FALSE_POSITIVES         = False
 VERBOSITY               = False
 config.USER_REQUESTS    = []
 
+
 # VERSION INFORMATION
 NAME                    = "LookingGlass"
-NUMERIC_VERSION         = 1.4
-NAME_VERSION            = "Benzaiten"
+NUMERIC_VERSION         = 1.5
+NAME_VERSION            = "Fariero"
 AUTHORS                 = ["Yuval tisf Nativ", "Dagan Pasternak"]
 THIS_YEAR               = 2016
+
 
 # REGEXES:
 SINGLE_COORD            = r'^(([\+\-])?\d{1,3}\.\d{2,17})$'
@@ -38,3 +42,4 @@ COORDINATES             = r'^(([\+\-])?\d{1,3}\.\d{2,17})[\,\s](([\+\-])?\d{1,3}
 EMAIL                   = r'([a-zA-Z0-9\-\.\_]+(\@| at )[a-zA-Z0-9\-\.\_]{3,16}(\.|dot| dot )[a-zA-Z0-9\-\.\_]{2,3})'
 MAC_ADDR                = r'([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})'
 IMEI_NOT_REALLY_REGEX   = r'(\d{15})'
+IP_ADDR                 = r'((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))'

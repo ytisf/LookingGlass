@@ -11,6 +11,8 @@ LookingGlass is a parsing tool to assist you with your traffic research. It is d
   - MSISDN
   - Longitudes & Latitudes
   - Emails
+  - MAC addresses (within requests not in tuple)
+  - IP Addresses (within requests not in tuple)
 
 The data is searched within encodings such cas `base64`, `urlencoding`, `base58` and we try to eliminate false-positives with searching if data might be data like `unix epoch time`.
 
@@ -26,6 +28,7 @@ A note for lazy - here is a 'help' with all arguments:
 -l, --live           Run on a live adapter and sniff. (not recommended)
 -v, --verbose        Show more information while running.
 -u, --user           User configurations to search.
+-k, --kml            If coordinates are found, save a KML file as well.
 -h, --help           Shows this help menu.
 --falpos             Ignore data types that are not reliable such as MSISDN.
 ```
@@ -131,12 +134,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 - [x] **Improvments** - Normal log file.
 - [x] **Improvments** - Preparation for different protocols.
 
-### Version 1.5 - No-Name-Yet
+### Version 1.5 - Fariero
+- [x] **Feature** - Export coordinations as KML.
+- [x] **Improvments** - Add IP address regex.
+- [x] **Improvments** - Several bug fixes and stability.
+
+## Version 1.6 - No-Name-Yet
 - [ ] **Feature** - Search for field names (for example, passwords)
-- [ ] **Improvments** - Export coordinations as KML.
+- [ ] **Feature** - Handeling Responses
 
 ### In the Distant Future - The year 2000
 - [ ] Real cookies support
 - [ ] Reconstruction
-- [ ] Handeling responses
-- [ ] Have some sort of API to add search options

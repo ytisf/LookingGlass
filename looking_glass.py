@@ -1,16 +1,24 @@
 #!/usr/bin/python
 
 # General imports
-import os
-import sys
-import time
-import glob
-import config
-import getopt
-import hashlib
-import logging
-import datetime
-import unicodedata
+try:
+	import os
+	import sys
+	import time
+	import glob
+	import config
+	import getopt
+	import hashlib
+	import logging
+	import datetime
+	import simplekml
+	import unicodedata
+except ImportError, e:
+	sys.stderr.write("\033[91m[!]\033[0m\tError with importing.\n")
+	sys.stderr.write("\033[91m[!]\033[0m\tPlease try running 'sudo pip install -r requirements.txt'.\n")
+	sys.stderr.write("\033[91m[!]\033[0m\tAnd if you still have an issue open a ticket.\n")
+	sys.stderr.write(e)
+	sys.exit()
 
 # Grouppings imports
 from threading import Thread
@@ -31,6 +39,69 @@ except ImportError, e:
 
 ### HERE ENDS IMPORTS SECTIONS
 
+
+def _is_root():
+	"""
+	Checks if the user running the script it root or not.
+	:return: Boolean
+	"""
+	if os.geteuid() != 0:
+		return True
+	else:
+		return False
+
+
+def _export_to_kml(fname):
+	"""
+	This function iterates over everything that might be coordinates and save it
+	as a KML file for later usage.
+	:param fname: String of file name to save at.
+	:return: Boolean
+	"""
+
+	global verbosity
+
+	temp_coords = {"Longitude": None, "Latitude": None}
+
+	kml = simplekml.Kml()
+
+	for pckt in core.vars.config.PACKETS:
+		try:
+			for field, possible_match, value in pckt.marked_fields:
+
+				if possible_match == "Coordinate":
+					lat, lon = value.split(",")
+					kml.newpoint(name=("Packet#%s:Field-'%s'" % (pckt.index, field)), coords=[(lat,lon)])
+
+				elif possible_match == "Longitude" or possible_match == "Latitude":
+					if field.lower() == ("longitude", "long", "lon", "lo"):
+						temp_coords['Longitude'] = value
+					elif field.lower() == ("latitude", "lati", "lat", "la"):
+						temp_coords['Latitude'] = value
+					else:
+						if temp_coords['Latitude'] is None:
+							temp_coords['Latitude'] = value
+						elif temp_coords['Longitude'] is None:
+							temp_coords['Longitude']= value
+						else:
+							pass
+
+					if temp_coords['Latitude'] is not None and temp_coords['Longitude'] is not None:
+						kml.newpoint(name=("Packet#%s:Field-'%s'" % (pckt.index, field)), coords=[(temp_coords['Longitude'], temp_coords['Latitude'])])
+						temp_coords = {"Longitude": None, "Latitude": None}
+
+		except:
+			continue
+
+	try:
+		kml.save(core.vars.REPORT_FOLER + fname + ".kml")
+		if verbosity:
+			sys.stdout.write("\033[92m[+]\033[0m\tFile '%s.kml' has been saved.\n" % fname)
+	except:
+		sys.stderr.write("\033[91m[!]\033[0m\tSomething went wrong with writing KML for '%s'.\n" % fname)
+		return ERR
+
+	return OKAY
 
 
 def md5(fname):
@@ -98,6 +169,7 @@ def _save(file_name):
 				line += str(packt.get_parameters) + SEPARATOR + str(packt.post_parameters) + "\n"
 			f.write(line)
 	f.close()
+	return OKAY
 
 
 def _to_presentable(string):
@@ -281,6 +353,7 @@ def _print_help():
 		-l, --live           Run in live sniffing on adapter. For example 'eth0' or 'en0'. (not recommended)
 		-v, --verbose        Show more information while running.
 		-u, --user           User configurations to search.
+		-k, --kml 			 If coordinates are found, save a KML file as well.
 		-h, --help           Shows this help menu.
 		--falpos             Ignore data types that are not reliable such as MSISDN.\033[0m
 
@@ -312,6 +385,7 @@ def _execution_wrapper(file_name):
 
 	global verbosity
 	global false_positives
+	global kml_flag
 
 	pckts = load_pcap(file_name)  # Read packets from PCAP
 	if pckts == ERR:
@@ -353,6 +427,8 @@ def _execution_wrapper(file_name):
 	_build_html(file_name)
 	if verbosity:
 		sys.stdout.write("\033[92m[+]\033[0m\tCreated a full HTML report.\n")
+	if kml_flag:
+		_export_to_kml(file_name.split("/")[-1])
 	core.vars.config.PACKETS = []
 	sys.stdout.write("\033[92m[+]\033[0m\tFinished with '%s'.\n" % file_name)
 
@@ -372,6 +448,11 @@ def _live_execution_wrapper(adapter):
 		th.start()
 		jobs.append(th)
 		i += 1
+
+	if not _is_root():
+		sys.stderr.write("\033[91m[!]\033[0m\tTo run in live mode you must be root.\n")
+		sys.stderr.write("\033[91m[!]\033[0m\tPlease run again with sudo.\n")
+		sys.exit(ERR)
 
 	try:
 		sys.stdout.write("\033[92m[+]\033[0m\tNow sniffing on '%s'.\n" % adapter)
@@ -475,6 +556,7 @@ def main():
 	# Set 'em global
 	global file_flag
 	global folder_flag
+	global kml_flag
 	global verbosity
 	global false_positives
 
@@ -482,6 +564,7 @@ def main():
 	file_flag = False
 	folder_flag = False
 	help_flag = False
+	kml_flag = False
 	verbosity = False
 	live_capture = False
 	user_requests = False
@@ -492,7 +575,7 @@ def main():
 									# on, ignore those fields.
 
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hf:d:l:u:v", ["file=", "directory=", "user=", "live=", "verbose", "falpos"])
+		opts, args = getopt.getopt(sys.argv[1:], "hf:d:l:u:k:v", ["file=", "directory=", "user=", "live=", "verbose", "kml", "falpos"])
 	except getopt.GetoptError:
 		_print_help()
 
@@ -511,6 +594,8 @@ def main():
 		elif opt in ("-l", "--live"):
 			live_capture = True
 			adapter = arg
+		elif opt in ("-k", "--kml"):
+			kml_flag = True
 		elif opt in ("-u", "--user"):
 			user_requests = True
 			rules_location = arg
@@ -566,7 +651,6 @@ def main():
 	elif live_capture:
 		_live_execution_wrapper(adapter)
 		_create_css()
-
 
 	else:
 		_print_help()

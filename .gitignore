@@ -7,3 +7,4 @@ Report/*.csv
 Report/*.html
 Report/*.css
 test_search_file
+*.kml

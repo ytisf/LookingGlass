@@ -114,11 +114,11 @@ class HandlePacket():
 		"""
 
 		# First, check if the entire content is JSON:
-		if _is_json(temp_get):
+		if _is_json(body):
 			# Is JSON
-			a = json.loads(temp_get)
+			a = json.loads(body)
 			if type(a) is dict:
-				for key, value in json.loads(temp_get).iteritems():
+				for key, value in json.loads(body).iteritems():
 					self.post_parameters.append([key, value])
 			elif type(a) is list:
 				try:
@@ -130,7 +130,7 @@ class HandlePacket():
 
 		# If not JSON, try splitting and check if JSON
 		else:
-			params = temp_get[temp_get.find("?") + 1:]
+			params = body[body.find("?") + 1:]
 			params = params.split("&")
 			for i in params:
 				try:
@@ -275,12 +275,17 @@ class HandlePacket():
 		isb64 = _is_base64(val)  	# Check if the data is base64 encoded
 									# Check if the data is binary. If not, replace the regexes to run on the decoded data.
 
+		# If the data is base64 get the value of the base64 decoded string
 		if type(isb64) is str:
 			val = isb64
 
+		# If the field is JSON it will be parsed later on
 		if "-JSON" in field:
 			return
+
+		# Do detection and pattern matching
 		a = whoami(self.index, val)
+
 		if a is not OKAY:
 			if (a == "Longitude" or a == "Latitude") and self.l_or_l == False:
 				self.l_or_l = True
