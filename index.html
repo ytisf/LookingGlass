@@ -7,8 +7,7 @@
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-light.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width">
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -16,18 +15,17 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1 class="header">LookingGlass</h1>
-        <p class="header">Customizable PCAP parser and your research assistant</p>
+        <h1>LookingGlass</h1>
+        <p>Customizable PCAP parser and your research assistant</p>
+
+        <p class="view"><a href="https://github.com/ytisf/LookingGlass">View the Project on GitHub <small>ytisf/LookingGlass</small></a></p>
+
 
         <ul>
-          <li class="download"><a class="buttons" href="https://github.com/ytisf/LookingGlass/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/ytisf/LookingGlass/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/ytisf/LookingGlass">View On GitHub</a></li>
+          <li><a href="https://github.com/ytisf/LookingGlass/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/ytisf/LookingGlass/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/ytisf/LookingGlass">View On <strong>GitHub</strong></a></li>
         </ul>
-
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/ytisf">ytisf</a></p>
-
-
       </header>
       <section>
         <h1>
@@ -48,6 +46,8 @@
 <li>MSISDN</li>
 <li>Longitudes &amp; Latitudes</li>
 <li>Emails</li>
+<li>MAC addresses (within requests not in tuple)</li>
+<li>IP Addresses (within requests not in tuple)</li>
 </ul>
 
 <p>The data is searched within encodings such cas <code>base64</code>, <code>urlencoding</code>, <code>base58</code> and we try to eliminate false-positives with searching if data might be data like <code>unix epoch time</code>.</p>
@@ -68,6 +68,7 @@
 -l, --live           Run on a live adapter and sniff. (not recommended)
 -v, --verbose        Show more information while running.
 -u, --user           User configurations to search.
+-k, --kml            If coordinates are found, save a KML file as well.
 -h, --help           Shows this help menu.
 --falpos             Ignore data types that are not reliable such as MSISDN.
 </code></pre>
@@ -202,11 +203,20 @@ along with this program.  If not, see <a href="http://www.gnu.org/licenses/">htt
 </ul>
 
 <h3>
-<a id="version-15---no-name-yet" class="anchor" href="#version-15---no-name-yet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.5 - No-Name-Yet</h3>
+<a id="version-15---fariero" class="anchor" href="#version-15---fariero" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.5 - Fariero</h3>
+
+<ul>
+<li>[x] <strong>Feature</strong> - Export coordinations as KML.</li>
+<li>[x] <strong>Improvments</strong> - Add IP address regex.</li>
+<li>[x] <strong>Improvments</strong> - Several bug fixes and stability.</li>
+</ul>
+
+<h2>
+<a id="version-16---no-name-yet" class="anchor" href="#version-16---no-name-yet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.6 - No-Name-Yet</h2>
 
 <ul>
 <li>[ ] <strong>Feature</strong> - Search for field names (for example, passwords)</li>
-<li>[ ] <strong>Improvments</strong> - Export coordinations as KML.</li>
+<li>[ ] <strong>Feature</strong> - Handeling Responses</li>
 </ul>
 
 <h3>
@@ -215,15 +225,14 @@ along with this program.  If not, see <a href="http://www.gnu.org/licenses/">htt
 <ul>
 <li>[ ] Real cookies support</li>
 <li>[ ] Reconstruction</li>
-<li>[ ] Handeling responses</li>
-<li>[ ] Have some sort of API to add search options</li>
 </ul>
       </section>
       <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+        <p>This project is maintained by <a href="https://github.com/ytisf">ytisf</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+    <script src="javascripts/scale.fix.js"></script>
+    
   </body>
 </html>
