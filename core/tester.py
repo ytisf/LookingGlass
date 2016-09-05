@@ -154,13 +154,17 @@ def binary_search(index, string):
 				if search in string:
 					return {	"type": "binary-user",
 								"name": name,
-								"match": string.find(search_term)}
+								"match": string.find(search)}
 
 			elif t == ("md5sum" or "sha1sum" or "sha256" or "sha512"):
 				if search in string:
 					return {	"type": name,
 								"name": name,
-								"match": string.find(search_term)}
+								"match": string.find(search)}
+				elif str(search) in str(string):
+					return {	"type": name,
+								"name": name,
+								"match": string.find(search)}
 
 	# In case nothing is found
 	return OKAY

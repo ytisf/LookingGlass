@@ -3,6 +3,8 @@
 ## Abstract
 LookingGlass is hosted at [Github](https://www.github.com) and is located at [https://LookingGlass.moriRT.com](https://lookingglass.morirt.com)
 
+LookingGlass is a Python tool intended on assisting networking researchers in identifying specific patterns, regex and specific data in various encodings in the traffic. The intention of LookingGlass is to assist the researcher in identifying the data you're interested at rather then doing various searches and dedicated scripts.
+
 LookingGlass is a parsing tool to assist you with your traffic research. It is designed to look (at the moment) only on HTTP requests (parameterized only!) and highlight specific information types. Currently, LookingGlass is hunting these particular data types:
   - IMEI
   - Credit Card numbers
@@ -75,8 +77,8 @@ binary, 0363646e0377, Binary User Name
 
 And Hash searches:
 ```
-md5hash, abc, MD5 of Name
-sha1hash, text_here, SHA1 of name
+md5sum, abc, MD5 of Name
+sha1sum, text_here, SHA1 of name
 sha256, text_here, SHA256 of name
 sha512, text_here, SHA512 of name
 ```
@@ -139,9 +141,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 - [x] **Improvments** - Add IP address regex.
 - [x] **Improvments** - Several bug fixes and stability.
 
+## Version 1.5.1 - Fariero
+- [x] **BugFix** - Bugfix in binary search.
+- [x] **BugFix** - Bugfix in hash search and display.
+
 ## Version 1.6 - No-Name-Yet
 - [ ] **Feature** - Search for field names (for example, passwords)
 - [ ] **Feature** - Handeling Responses
+
 
 ### In the Distant Future - The year 2000
 - [ ] Real cookies support

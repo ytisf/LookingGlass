@@ -30,7 +30,7 @@ config.USER_REQUESTS    = []
 
 # VERSION INFORMATION
 NAME                    = "LookingGlass"
-NUMERIC_VERSION         = 1.5
+NUMERIC_VERSION         = "1.5.1"
 NAME_VERSION            = "Fariero"
 AUTHORS                 = ["Yuval tisf Nativ", "Dagan Pasternak"]
 THIS_YEAR               = 2016

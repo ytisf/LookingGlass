@@ -517,10 +517,10 @@ def _read_user_search_file(path_to_conf):
 					sys.stderr.write("\033[91m[-]\033[0m\tError while converting binary search in name '%s'. Probably odd chars.\n" % name.strip())
 					continue
 
-			elif t == "md5hash":
+			elif t == "md5sum":
 				rules.append([t, hashlib.md5(search_term).hexdigest(), name])
 
-			elif t == "sha1hash":
+			elif t == "sha1sum":
 				rules.append([t, hashlib.sha1(search_term).hexdigest(), name])
 
 			elif t == "sha256":
@@ -530,7 +530,7 @@ def _read_user_search_file(path_to_conf):
 				rules.append([t, hashlib.sha512(search_term).hexdigest(), name])
 
 			else:
-				sys.stdout.write("\033[91m[-]\033[0m\tFirst delimiter must be 'regex' or 'normal', not '%s'.\n" % t)
+				sys.stdout.write("\033[91m[-]\033[0m\tFirst delimiter must be \n\t\t\t'regex', 'normal', 'md5sum', 'sha1sum', 'sha256' or not 'sha512'.\n\t\t\t '%s' is unknown.\n" % t)
 				continue
 
 			i += 1
