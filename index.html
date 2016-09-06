@@ -16,7 +16,7 @@
     <div class="wrapper">
       <header>
         <h1>LookingGlass</h1>
-        <p>Customizable PCAP parser and your research assistant</p>
+        <p>Your network research assistant</p>
 
         <p class="view"><a href="https://github.com/ytisf/LookingGlass">View the Project on GitHub <small>ytisf/LookingGlass</small></a></p>
 
@@ -35,6 +35,8 @@
 <a id="abstract" class="anchor" href="#abstract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Abstract</h2>
 
 <p>LookingGlass is hosted at <a href="https://www.github.com">Github</a> and is located at <a href="https://lookingglass.morirt.com">https://LookingGlass.moriRT.com</a></p>
+
+<p>LookingGlass is a Python tool intended on assisting networking researchers in identifying specific patterns, regex and specific data in various encodings in the traffic. The intention of LookingGlass is to assist the researcher in identifying the data you're interested at rather then doing various searches and dedicated scripts.</p>
 
 <p>LookingGlass is a parsing tool to assist you with your traffic research. It is designed to look (at the moment) only on HTTP requests (parameterized only!) and highlight specific information types. Currently, LookingGlass is hunting these particular data types:</p>
 
@@ -123,8 +125,8 @@
 
 <p>And Hash searches:</p>
 
-<pre><code>md5hash, abc, MD5 of Name
-sha1hash, text_here, SHA1 of name
+<pre><code>md5sum, abc, MD5 of Name
+sha1sum, text_here, SHA1 of name
 sha256, text_here, SHA256 of name
 sha512, text_here, SHA512 of name
 </code></pre>
@@ -150,6 +152,15 @@ GNU General Public License for more details.</p>
 
 <p>You should have received a copy of the GNU General Public License
 along with this program.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+
+<h2>
+<a id="flow-chart" class="anchor" href="#flow-chart" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Flow Chart</h2>
+
+<p>FlowChart created using the awesome <a href="https://github.com/knsv/mermaid">Mermaid</a> project.</p>
+
+<p>Source can be found at <code>mermaid.md</code> and you can use <a href="http://knsv.github.io/mermaid/live_editor/#/view/Z3JhcGggVEQKICAgIHN0YXJ0W0xvb2tpbmdHbGFzcyBTdGFydF0KICAgIHN0YXRle0xpdmUvUENBUH0KICAgIHVzZXJfcGFyYW1bTG9hZCBVc2VyIFBhcmFtZXRlcnNdCiAgICBzdGFydC0tPiB1c2VyX3BhcmFtCiAgICB1c2VyX3BhcmFtIC0tPnN0YXRlCiAgICBhZGFwdFtTdGFydCBTbmlmZmluZ10KICAgIHN0YXRlLS0-IHxMaXZlfCBhZGFwdAogICAgY29sZFtSZWFkIFBDQVAgRmlsZV0KICAgIHN0YXRlLS0-IHxQQ0FQfCBjb2xkCiAgICB0aHJlYWRpbmdbQ3JlYXRlIFRocmVhZCBmb3IgRWFjaCBQYWNrZXRdCiAgICBjb2xkLS0-dGhyZWFkaW5nCiAgICBhZGFwdC0tPnRocmVhZGluZwogICAgaWRlbnR7SXMgSFRUUFJlcXVlc3Q_fQogICAgdGhyZWFkaW5nLS0-aWRlbnQKICAgIHBhcmFtc1tHZXRQYXJhbWV0ZXJzXQogICAgYmluW0RvUmF3U2VhcmNoXQogICAgaWRlbnQtLT58SFRUUFJlcXVlc3R8cGFyYW1zCiAgICBpZGVudC0tPnxCaW5hcnl8YmluCiAgICB2YXJzW0VuY29kaW5ncyBTZWFyY2hdCiAgICBkZWNvZGVbRGVjb2RlUGFyYW1zXQogICAgcGFyYW1zLS0-ZGVjb2RlCiAgICBiaW4tLT52YXJzCiAgICBkZWNvZGUtLT52YXJzCiAgICBqb2luW0pvaW5UaHJlYWRzXQogICAgdmFycy0tPmpvaW4KICAgIGNzdltXcml0ZUNTVl0KICAgIGh0bWxbV3JpdGVIVE1MXQogICAgam9pbi0tPmNzdgogICAgbWF0Y2h7TWF0Y2hlcyA_fQogICAgY3N2LS0-bWF0Y2gKICAgIG1hdGNoLS0-fFllc3xodG1sCiAgICBtYXRjaC0tPnxOb3xRdWl0CiAgICBodG1sLS0-UXVpdA">this</a> link to edit it.</p>
+
+<p><img src="https://raw.githubusercontent.com/ytisf/LookingGlass/master/FlowChart.png" alt="LookingGlass FlowChart"></p>
 
 <h2>
 <a id="future-developments" class="anchor" href="#future-developments" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Future Developments</h2>
@@ -209,6 +220,14 @@ along with this program.  If not, see <a href="http://www.gnu.org/licenses/">htt
 <li>[x] <strong>Feature</strong> - Export coordinations as KML.</li>
 <li>[x] <strong>Improvments</strong> - Add IP address regex.</li>
 <li>[x] <strong>Improvments</strong> - Several bug fixes and stability.</li>
+</ul>
+
+<h2>
+<a id="version-151---fariero" class="anchor" href="#version-151---fariero" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Version 1.5.1 - Fariero</h2>
+
+<ul>
+<li>[x] <strong>BugFix</strong> - Bugfix in binary search.</li>
+<li>[x] <strong>BugFix</strong> - Bugfix in hash search and display.</li>
 </ul>
 
 <h2>
