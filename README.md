@@ -106,6 +106,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+## Flow Chart
+FlowChart created using the awesome [Mermaid](https://github.com/knsv/mermaid) project.
+
+Source can be found at `mermaid.md` and you can use [this](http://knsv.github.io/mermaid/live_editor/#/view/Z3JhcGggVEQKICAgIHN0YXJ0W0xvb2tpbmdHbGFzcyBTdGFydF0KICAgIHN0YXRle0xpdmUvUENBUH0KICAgIHVzZXJfcGFyYW1bTG9hZCBVc2VyIFBhcmFtZXRlcnNdCiAgICBzdGFydC0tPiB1c2VyX3BhcmFtCiAgICB1c2VyX3BhcmFtIC0tPnN0YXRlCiAgICBhZGFwdFtTdGFydCBTbmlmZmluZ10KICAgIHN0YXRlLS0-IHxMaXZlfCBhZGFwdAogICAgY29sZFtSZWFkIFBDQVAgRmlsZV0KICAgIHN0YXRlLS0-IHxQQ0FQfCBjb2xkCiAgICB0aHJlYWRpbmdbQ3JlYXRlIFRocmVhZCBmb3IgRWFjaCBQYWNrZXRdCiAgICBjb2xkLS0-dGhyZWFkaW5nCiAgICBhZGFwdC0tPnRocmVhZGluZwogICAgaWRlbnR7SXMgSFRUUFJlcXVlc3Q_fQogICAgdGhyZWFkaW5nLS0-aWRlbnQKICAgIHBhcmFtc1tHZXRQYXJhbWV0ZXJzXQogICAgYmluW0RvUmF3U2VhcmNoXQogICAgaWRlbnQtLT58SFRUUFJlcXVlc3R8cGFyYW1zCiAgICBpZGVudC0tPnxCaW5hcnl8YmluCiAgICB2YXJzW0VuY29kaW5ncyBTZWFyY2hdCiAgICBkZWNvZGVbRGVjb2RlUGFyYW1zXQogICAgcGFyYW1zLS0-ZGVjb2RlCiAgICBiaW4tLT52YXJzCiAgICBkZWNvZGUtLT52YXJzCiAgICBqb2luW0pvaW5UaHJlYWRzXQogICAgdmFycy0tPmpvaW4KICAgIGNzdltXcml0ZUNTVl0KICAgIGh0bWxbV3JpdGVIVE1MXQogICAgam9pbi0tPmNzdgogICAgbWF0Y2h7TWF0Y2hlcyA_fQogICAgY3N2LS0-bWF0Y2gKICAgIG1hdGNoLS0-fFllc3xodG1sCiAgICBtYXRjaC0tPnxOb3xRdWl0CiAgICBodG1sLS0-UXVpdA) link to edit it.
+
+![LookingGlass FlowChart](https://raw.githubusercontent.com/ytisf/LookingGlass/master/FlowChart.png)
+
 ## Future Developments
 
 ### Version 1.0 - Venus
