@@ -46,9 +46,9 @@ def _is_root():
 	:return: Boolean
 	"""
 	if os.geteuid() != 0:
-		return True
-	else:
 		return False
+	else:
+		return True
 
 
 def _export_to_kml(fname):
