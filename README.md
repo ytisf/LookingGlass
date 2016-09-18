@@ -3,9 +3,9 @@
 ## Abstract
 LookingGlass is hosted at [Github](https://www.github.com) and is located at [https://LookingGlass.moriRT.com](https://lookingglass.morirt.com)
 
-LookingGlass is a Python tool intended on assisting networking researchers in identifying specific patterns, regex and specific data in various encodings in the traffic. The intention of LookingGlass is to assist the researcher in identifying the data you're interested at rather then doing various searches and dedicated scripts.
+LookingGlass is a Python tool intended on assisting networking researchers in identifying specific patterns, regex and specific data in various encodings in traffic and in PCAP files. The intention of LookingGlass is to assist the researcher in identifying the data you're interested at rather then doing various searches and dedicated scripts.
 
-LookingGlass is a parsing tool to assist you with your traffic research. It is designed to look (at the moment) only on HTTP requests (parameterized only!) and highlight specific information types. Currently, LookingGlass is hunting these particular data types:
+LookingGlass is a PCAP parsing tool to assist you with your traffic research. It is designed to look (at the moment) only on HTTP requests (parameterized only!) and highlight specific information types. Currently, LookingGlass is hunting these particular data types:
   - IMEI
   - Credit Card numbers
   - Locations
