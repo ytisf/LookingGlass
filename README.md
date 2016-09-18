@@ -25,14 +25,26 @@ It will create two artifacts after execution:
 
 A note for lazy - here is a 'help' with all arguments:
 ```
--f, --file           Single file mode. Path to PCAP file.
--d, --directory      Directory to scan PCAPs in.
--l, --live           Run on a live adapter and sniff. (not recommended)
--v, --verbose        Show more information while running.
--u, --user           User configurations to search.
--k, --kml            If coordinates are found, save a KML file as well.
--h, --help           Shows this help menu.
---falpos             Ignore data types that are not reliable such as MSISDN.
+These are the possible arguments:
+	-f, --file           Single file mode. Path to PCAP file.
+	-d, --directory      Directory to scan PCAPs in.
+	-l, --live           Run in live sniffing on adapter. For example 'eth0' or 'en0'. (not recommended)
+	-v, --verbose        Show more information while running.
+	-u, --user           User configurations to search.
+	-k, --kml 			 If coordinates are found, save a KML file as well.
+	-h, --help           Shows this help menu.
+	--falpos             Ignore data types that are not reliable such as MSISDN.
+
+The options for user defined serrch are:
+	'regex' - A regex to search. For example 'regex, (com\.([a-zA-z]+\.){1,3}[a-zA-z]+), Android Package Name'.
+	'noraml' - Regular search for data. For example 'normal, SM-J700, Device Model'.
+	'binary' - Hex encoded binary data. For example 'binary, 0363646e0377, BinarySearch'.
+	'md5sum' - MD5 value of data. For example 'md5sum, 5554353444, MD5 of MSISDN'.
+	'sha1sum' - SHA1 value of data. For example 'sha1sum, text_here, SHA1 of name'.
+	'sha256' - SHA256 value of data. For example 'sha256, text_here, SHA256 of name'.
+	'sha512' - SHA512 value of data. For example 'sha512, text_here, SHA512 of name'.
+	'in_field_name' - Value to be in an HTTP parameter name. For example 'in_field_name, lat, Might be Latitude'.
+	'field_name_is' - Exact value of HTTP parameter name. For example 'field_name_is, MSISDN, Phone number'.
 ```
 
 *Little Comment* - Because we get to record directly on devices sometimes, and on Android the recorder does not add the IP layer, we have added support for that as well.
@@ -155,11 +167,11 @@ Source can be found at `mermaid.md` and you can use [this](http://knsv.github.io
 - [x] **Improvments** - Add IP address regex.
 - [x] **Improvments** - Several bug fixes and stability.
 
-## Version 1.5.1 - Fariero
+### Version 1.5.1 - Fariero
 - [x] **BugFix** - Bugfix in binary search.
 - [x] **BugFix** - Bugfix in hash search and display.
 
-## Version 1.6 - GEN
+### Version 1.6 - GEN
 - [x] **Feature** - Search for field names (for example, passwords)
 - [x] **Feature** - Handeling Responses
 
