@@ -17,7 +17,7 @@ except ImportError, e:
 	sys.stderr.write("\033[91m[!]\033[0m\tError with importing.\n")
 	sys.stderr.write("\033[91m[!]\033[0m\tPlease try running 'sudo pip install -r requirements.txt'.\n")
 	sys.stderr.write("\033[91m[!]\033[0m\tAnd if you still have an issue open a ticket.\n")
-	sys.stderr.write(e)
+	sys.stderr.write(str(e))
 	sys.exit()
 
 # Grouppings imports
@@ -357,6 +357,17 @@ def _print_help():
 		-h, --help           Shows this help menu.
 		--falpos             Ignore data types that are not reliable such as MSISDN.\033[0m
 
+	The options for user defined serrch are:
+		'regex' - A regex to search. For example 'regex, (com\.([a-zA-z]+\.){1,3}[a-zA-z]+), Android Package Name'.
+		'noraml' - Regular search for data. For example 'normal, SM-J700, Device Model'.
+		'binary' - Hex encoded binary data. For example 'binary, 0363646e0377, BinarySearch'.
+		'md5sum' - MD5 value of data. For example 'md5sum, 5554353444, MD5 of MSISDN'.
+		'sha1sum' - SHA1 value of data. For example 'sha1sum, text_here, SHA1 of name'.
+		'sha256' - SHA256 value of data. For example 'sha256, text_here, SHA256 of name'.
+		'sha512' - SHA512 value of data. For example 'sha512, text_here, SHA512 of name'.
+		'in_field_name' - Value to be in an HTTP parameter name. For example 'in_field_name, lat, Might be Latitude'.
+		'field_name_is' - Exact value of HTTP parameter name. For example 'field_name_is, MSISDN, Phone number'.
+
 	In the folder \033[36m'Report'\033[0m you will have a CSV file and an HTML file for each
 	of the PCAPs you executed the program on. The HTML report contains just the results which
 	matches one of the data-types. In the CSV report you shall have all the requests divided
@@ -529,8 +540,14 @@ def _read_user_search_file(path_to_conf):
 			elif t == "sha512":
 				rules.append([t, hashlib.sha512(search_term).hexdigest(), name])
 
+			elif t == "field_name_is":
+				rules.append([t, search_term, name])
+
+			elif t == "in_field_name":
+				rules.append([t, search_term, name])
+
 			else:
-				sys.stdout.write("\033[91m[-]\033[0m\tFirst delimiter must be \n\t\t\t'regex', 'normal', 'md5sum', 'sha1sum', 'sha256' or not 'sha512'.\n\t\t\t '%s' is unknown.\n" % t)
+				sys.stdout.write("\033[91m[-]\033[0m\tFirst delimiter must be \n\t\t\t'regex', 'normal', 'md5sum', 'sha1sum', 'sha256', 'in_field_name', 'field_name_is' or 'sha512'.\n\t\t\t '%s' is unknown.\n" % t)
 				continue
 
 			i += 1

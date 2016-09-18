@@ -83,6 +83,13 @@ sha256, text_here, SHA256 of name
 sha512, text_here, SHA512 of name
 ```
 
+Also, field names:
+```
+in_field_name, lat, Might be Latitude
+field_name_is, MSISDN, Phone number
+```
+
+`in_field_name` will yield a result of the string is within an HTTP parameter whil `field_name_is` will yeild a response only if the field name is exactly a string match.
 
 After you have saved the file you can call it like this:
 ```bash
@@ -152,9 +159,9 @@ Source can be found at `mermaid.md` and you can use [this](http://knsv.github.io
 - [x] **BugFix** - Bugfix in binary search.
 - [x] **BugFix** - Bugfix in hash search and display.
 
-## Version 1.6 - No-Name-Yet
-- [ ] **Feature** - Search for field names (for example, passwords)
-- [ ] **Feature** - Handeling Responses
+## Version 1.6 - GEN
+- [x] **Feature** - Search for field names (for example, passwords)
+- [x] **Feature** - Handeling Responses
 
 
 ### In the Distant Future - The year 2000

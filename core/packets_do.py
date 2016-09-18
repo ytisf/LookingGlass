@@ -284,7 +284,7 @@ class HandlePacket():
 			return
 
 		# Do detection and pattern matching
-		a = whoami(self.index, val)
+		a = whoami(self.index, val, field)
 
 		if a is not OKAY:
 			if (a == "Longitude" or a == "Latitude") and self.l_or_l == False:

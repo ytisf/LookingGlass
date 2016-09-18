@@ -170,7 +170,7 @@ def binary_search(index, string):
 	return OKAY
 
 
-def whoami(index, string):
+def whoami(index, string, field):
 	"""
 	Checks matches on string
 	:param string: string to check
@@ -238,8 +238,17 @@ def whoami(index, string):
 			if t == "normal":
 				if search in string:
 					return name
+
 			elif t == "regex":
 				if _is_regex_matching(string, search):
+					return name
+
+			elif t == "in_field_name":
+				if search in field:
+					return name
+
+			elif t == "field_name_is":
+				if search == field or unicode(search) == field:
 					return name
 
 
