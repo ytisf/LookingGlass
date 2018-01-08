@@ -136,6 +136,9 @@ def load_pcap(path_to_pcap):
 	except IOError, e:
 		sys.stderr.write("\033[91m[!]\033[0m\tCould not read PCAP '%s'.\n" % path_to_pcap)
 		return ERR
+	except scapy.error.Scapy_Exception, e:
+		sys.stderr.write("\033[91m[!]\033[0m\tCould not read PCAP '%s'.\nScapy raised error %s.\n" % (path_to_pcap, e))
+		return ERR
 
 
 def _do_packet(pckt, i):

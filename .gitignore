@@ -8,3 +8,4 @@ Report/*.html
 Report/*.css
 test_search_file
 *.kml
+testing.py
